@@ -3,6 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>
+(function () {
+  // Alguns navegadores embutidos em apps abrem a pagina em "modo desktop":
+  // forcam um viewport de 980px numa tela de 376px e desenham tudo a 38% do
+  // tamanho. Quando a diferenca e grande demais, reescrevemos o viewport com
+  // a largura real do aparelho, e o layout volta ao tamanho certo.
+  try {
+    var real = (window.screen && screen.width) ? screen.width : 0;
+    if (!real) return;
+    function apply() {
+      if (window.innerWidth > real * 1.5) {
+        var mv = document.querySelector('meta[name="viewport"]');
+        if (mv) mv.setAttribute('content',
+          'width=' + real + ', initial-scale=1, viewport-fit=cover');
+      }
+    }
+    apply();
+    window.addEventListener('load', apply);
+    window.addEventListener('orientationchange', function () { setTimeout(apply, 200); });
+  } catch (e) { /* ignore */ }
+})();
+</script>
 <title>旅行 · Chinês para Viagem</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

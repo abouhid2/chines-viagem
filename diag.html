@@ -3,6 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>
+(function () {
+  // Alguns navegadores embutidos em apps abrem a pagina em "modo desktop":
+  // forcam um viewport de 980px numa tela de 376px e desenham tudo a 38% do
+  // tamanho. Quando a diferenca e grande demais, reescrevemos o viewport com
+  // a largura real do aparelho, e o layout volta ao tamanho certo.
+  try {
+    var real = (window.screen && screen.width) ? screen.width : 0;
+    if (!real) return;
+    function apply() {
+      if (window.innerWidth > real * 1.5) {
+        var mv = document.querySelector('meta[name="viewport"]');
+        if (mv) mv.setAttribute('content',
+          'width=' + real + ', initial-scale=1, viewport-fit=cover');
+      }
+    }
+    apply();
+    window.addEventListener('load', apply);
+    window.addEventListener('orientationchange', function () { setTimeout(apply, 200); });
+  } catch (e) { /* ignore */ }
+})();
+</script>
 <title>Diagnóstico</title>
 <style>
   body { font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 16px; background: #111; color: #eee; }
@@ -43,6 +65,10 @@
   html += row('pointer: coarse?', coarse ? 'SIM' : 'NÃO', coarse ? 'ok' : 'bad');
   html += row('hover?', window.matchMedia('(hover: hover)').matches ? 'sim' : 'não');
   html += row('container queries?', (window.CSS && CSS.supports && CSS.supports('container-type: size')) ? 'sim' : 'NÃO', (window.CSS && CSS.supports && CSS.supports('container-type: size')) ? 'ok' : 'bad');
+  var mv = document.querySelector('meta[name="viewport"]');
+  var corrigido = mv && mv.getAttribute('content').indexOf('device-width') === -1;
+  html += row('viewport corrigido?', corrigido ? 'SIM' : 'não', corrigido ? 'ok' : '');
+  html += row('meta viewport atual', mv ? mv.getAttribute('content') : 'n/d');
   html += row('navegador', navigator.userAgent.slice(0, 90));
   document.getElementById('t').innerHTML = html;
 </script>
