@@ -6,10 +6,11 @@ Flashcards de chinês mandarim para usar em viagem, direto no navegador do celul
 
 ## O que tem
 
-- **450 palavras e frases**, todas com pinyin, tradução e explicação caractere por caractere.
-- **Cobertura completa de HSK 1 e HSK 2**, o núcleo de vocabulário de um iniciante (157 + 157 palavras), somado a 136 frases práticas de viagem que não aparecem nas listas oficiais.
+- **661 palavras e frases**, todas com pinyin, tradução e explicação caractere por caractere.
+- **Cobertura completa de HSK 1 e HSK 2**, o núcleo de vocabulário de um iniciante, somada a centenas de frases práticas de viagem que não aparecem nas listas oficiais.
+- **Nenhuma área com menos de 20 cartas**, para que qualquer sessão de estudo tenha conteúdo suficiente.
 - **Teste de nível A1 e A2**: 15 perguntas de múltipla escolha que alternam entre hanzi para português e português para hanzi. No fim mostra o percentual e um veredito, e o que você errou entra automaticamente na fila de revisão, com botão para treinar só esses erros.
-- **27 áreas temáticas** (saudações, restaurante, transporte, hotel, compras, emergência, aeroporto, conversa, verbos, pronomes, gramática, adjetivos, números, tempo e outras), cada uma com contagem e barra de progresso.
+- **28 áreas temáticas** (saudações, despedidas, restaurante, transporte, hotel, compras, emergência, aeroporto, conversa, verbos, pronomes, gramática, adjetivos, números, tempo, cores, corpo, escola e outras), cada uma com contagem e barra de progresso.
 - Áudio em mandarim via Web Speech API (toque no botão ♪).
 - Swipe estilo baralho: direita para "sei", esquerda para "revisar".
 - Progresso salvo no próprio aparelho (localStorage).
@@ -29,9 +30,9 @@ Se a página aparecer cortada ou muito pequena, verifique se o navegador está e
 
 Não existe tabela de equivalência oficial entre HSK e CEFR endossada pelos dois organismos, e as fontes divergem. O critério adotado aqui é o mais prático para quem está começando:
 
-- **A1** = as 157 palavras de HSK 1
-- **A2** = as 157 palavras novas de HSK 2
-- **Viagem** = frases de sobrevivência que não constam do HSK
+- **A1** = as palavras de HSK 1 (167 cartas)
+- **A2** = as palavras novas de HSK 2 (182 cartas)
+- **Viagem** = frases de sobrevivência que não constam do HSK (312 cartas)
 
 Isso também conversa com a faixa de 500 a 700 vocábulos que a literatura do CEFR costuma associar ao A1.
 
