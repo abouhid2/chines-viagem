@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Diagnóstico</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 16px; background: #111; color: #eee; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { margin: 0 0 16px; opacity: .6; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  td { padding: 10px 6px; border-bottom: 1px solid #333; vertical-align: top; }
+  td:first-child { opacity: .65; width: 52%; }
+  td:last-child { font-weight: 700; font-family: ui-monospace, monospace; }
+  .ok { color: #6bd08a; } .bad { color: #ff6b6b; }
+  .ruler { margin-top: 18px; height: 26px; background: repeating-linear-gradient(90deg,#c8392e 0 10%,#333 10% 20%); }
+  .note { margin-top: 10px; font-size: 13px; opacity: .7; }
+</style>
+</head>
+<body>
+<h1>Diagnóstico de tela</h1>
+<p class="sub">Tire um print desta tela inteira e mande.</p>
+<table id="t"></table>
+<div class="ruler"></div>
+<p class="note">A régua acima tem 10 faixas. Se você não vê exatamente 10 faixas de ponta a ponta, a página está sendo cortada ou com zoom.</p>
+<script>
+  function row(k, v, cls) {
+    return '<tr><td>' + k + '</td><td class="' + (cls || '') + '">' + v + '</td></tr>';
+  }
+  var d = document.documentElement;
+  var vv = window.visualViewport;
+  var overflow = d.scrollWidth > d.clientWidth + 1;
+  var coarse = window.matchMedia('(pointer: coarse)').matches;
+  var html = '';
+  html += row('innerWidth (viewport CSS)', window.innerWidth);
+  html += row('clientWidth', d.clientWidth);
+  html += row('scrollWidth', d.scrollWidth);
+  html += row('corta na horizontal?', overflow ? 'SIM' : 'não', overflow ? 'bad' : 'ok');
+  html += row('screen.width', screen.width);
+  html += row('devicePixelRatio', window.devicePixelRatio);
+  html += row('zoom (visualViewport.scale)', vv ? vv.scale.toFixed(2) : 'n/d');
+  html += row('largura visual', vv ? Math.round(vv.width) : 'n/d');
+  html += row('pointer: coarse?', coarse ? 'SIM' : 'NÃO', coarse ? 'ok' : 'bad');
+  html += row('hover?', window.matchMedia('(hover: hover)').matches ? 'sim' : 'não');
+  html += row('container queries?', (window.CSS && CSS.supports && CSS.supports('container-type: size')) ? 'sim' : 'NÃO', (window.CSS && CSS.supports && CSS.supports('container-type: size')) ? 'ok' : 'bad');
+  html += row('navegador', navigator.userAgent.slice(0, 90));
+  document.getElementById('t').innerHTML = html;
+</script>
+</body>
+</html>
