@@ -359,6 +359,52 @@
   .area-card.all .area-bar { background: rgba(244, 237, 224, 0.22); }
   .area-bar > i { display: block; height: 100%; border-radius: 2px; background: var(--jade); }
   .list-view { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .area-card.quiz-entry {
+    background: linear-gradient(180deg, #c8392e 0%, #a82e25 100%);
+    color: var(--paper); border-color: #a82e25; min-height: 92px;
+  }
+  .area-card.quiz-entry .area-han { color: var(--paper); opacity: 0.22; }
+  .quiz {
+    position: absolute; inset: 0; background: var(--paper);
+    z-index: 30; display: none; flex-direction: column;
+  }
+  .quiz.active { display: flex; }
+  .quiz-bar { height: 3px; background: rgba(26,22,18,0.1); }
+  .quiz-bar > i { display: block; height: 100%; width: 0; background: var(--vermilion); transition: width .3s; }
+  .quiz-body { flex: 1; display: flex; flex-direction: column; padding: 20px; min-height: 0; overflow-y: auto; }
+  .quiz-step {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 2px; text-transform: uppercase; opacity: .5; text-align: center;
+  }
+  .quiz-ask {
+    flex: 0 0 auto; text-align: center; padding: 22px 6px 18px;
+  }
+  .quiz-ask-han { font-family: 'Noto Serif SC', serif; font-size: clamp(44px, 15vw, 88px); line-height: 1.1; }
+  .quiz-ask-pin { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(18px, 5vw, 26px); color: var(--gold); margin-top: 6px; }
+  .quiz-ask-pt { font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 7vw, 40px); font-weight: 500; line-height: 1.15; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    width: 100%; text-align: left; padding: 16px 18px; border-radius: 4px;
+    border: 1px solid rgba(26,22,18,0.2); background: #faf3e6; cursor: pointer;
+    font-family: 'Cormorant Garamond', serif; font-size: clamp(19px, 5vw, 26px);
+    color: var(--ink); line-height: 1.2;
+  }
+  .quiz-opt .han { font-family: 'Noto Serif SC', serif; font-size: 1.25em; }
+  .quiz-opt.right { background: var(--jade); color: var(--paper); border-color: var(--jade); }
+  .quiz-opt.wrong { background: var(--vermilion); color: var(--paper); border-color: var(--vermilion); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-result { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 24px; text-align: center; }
+  .quiz-score { font-family: 'Cormorant Garamond', serif; font-size: 64px; line-height: 1; }
+  .quiz-verdict { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 26px; margin: 14px 0 6px; }
+  .quiz-detail { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; opacity: .6; margin-bottom: 26px; }
+  .quiz-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; }
+  .quiz-actions button {
+    padding: 16px; border-radius: 2px; cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; border: 1.5px solid var(--ink);
+    background: transparent; color: var(--ink);
+  }
+  .quiz-actions button.primary { background: var(--ink); color: var(--paper); }
   .back-btn {
     width: 36px; height: 36px; border: 1px solid rgba(26,22,18,0.2);
     background: transparent; border-radius: 4px; cursor: pointer;
@@ -549,6 +595,15 @@
       <button class="close-btn" id="closePanel">✕</button>
     </div>
     <div class="area-grid" id="areaGrid"></div>
+    <div class="quiz" id="quiz">
+      <div class="panel-header">
+        <div class="panel-title" id="quizTitle">Teste</div>
+        <button class="close-btn" id="closeQuiz" aria-label="Fechar">✕</button>
+      </div>
+      <div class="quiz-bar"><i id="quizBar"></i></div>
+      <div class="quiz-body" id="quizBody"></div>
+      <div class="quiz-result" id="quizResult" hidden></div>
+    </div>
     <div class="list-view" id="listView" hidden>
       <div class="tabs">
         <button class="tab" data-tab="know">Sei <span class="tab-count" id="countKnow">0</span></button>
@@ -586,8 +641,6 @@
       etym: 'Radical <span class="han">讠</span> (fala) + <span class="han">青</span> (som qing) — pedir com palavras' },
     { hanzi: '不好意思', pinyin: 'bù hǎo yì si', pt: 'com licença / desculpa', cat: 'Cortesia', lvl: 'Viagem',
       etym: '<span class="han">不</span> não + <span class="han">好</span> bom + <span class="han">意思</span> intenção = lit. "não pega bem"' },
-    { hanzi: '是', pinyin: 'shì', pt: 'sim / é', cat: 'Resposta', lvl: 'A1',
-      etym: '<span class="han">日</span> (sol) + <span class="han">正</span> (correto) — tradicionalmente lido como "assim é"' },
     { hanzi: '不是', pinyin: 'bú shì', pt: 'não é', cat: 'Resposta', lvl: 'Viagem',
       etym: '<span class="han">不</span> (não) + <span class="han">是</span> (ser)' },
     { hanzi: '好', pinyin: 'hǎo', pt: 'ok / bom', cat: 'Resposta', lvl: 'A1',
@@ -1010,6 +1063,290 @@
       etym: '<span class="han">晚</span> tarde + <span class="han">上</span> em cima' },
     { hanzi: '去年', pinyin: 'qù nián', pt: 'ano passado', cat: 'Tempo', lvl: 'A2',
       etym: '<span class="han">去</span> ir/passado + <span class="han">年</span> ano' },
+    { hanzi: '是', pinyin: 'shì', pt: 'ser / sim', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">日</span> sol + <span class="han">正</span> correto — "assim é"' },
+    { hanzi: '有', pinyin: 'yǒu', pt: 'ter / haver', cat: 'Verbo', lvl: 'A1',
+      etym: 'Uma mão segurando carne <span class="han">月</span>' },
+    { hanzi: '在', pinyin: 'zài', pt: 'estar em', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">土</span> terra + <span class="han">才</span> som zai' },
+    { hanzi: '做', pinyin: 'zuò', pt: 'fazer', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">亻</span> pessoa + <span class="han">故</span> som gu' },
+    { hanzi: '住', pinyin: 'zhù', pt: 'morar', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">亻</span> pessoa + <span class="han">主</span> som zhu' },
+    { hanzi: '来', pinyin: 'lái', pt: 'vir', cat: 'Verbo', lvl: 'A1',
+      etym: 'Forma antiga de uma espiga de trigo' },
+    { hanzi: '去', pinyin: 'qù', pt: 'ir', cat: 'Verbo', lvl: 'A1',
+      etym: 'Par de <span class="han">来</span> (vir)' },
+    { hanzi: '回', pinyin: 'huí', pt: 'voltar', cat: 'Verbo', lvl: 'A1',
+      etym: 'Desenho de um redemoinho, o movimento que retorna' },
+    { hanzi: '想', pinyin: 'xiǎng', pt: 'pensar / querer', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">相</span> som xiang + <span class="han">心</span> coração' },
+    { hanzi: '要', pinyin: 'yào', pt: 'querer / precisar', cat: 'Verbo', lvl: 'A2',
+      etym: 'Mais forte e direto que <span class="han">想</span>' },
+    { hanzi: '吃', pinyin: 'chī', pt: 'comer', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">口</span> boca + <span class="han">乞</span> som qi' },
+    { hanzi: '喝', pinyin: 'hē', pt: 'beber', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">口</span> boca + <span class="han">曷</span> som he' },
+    { hanzi: '说', pinyin: 'shuō', pt: 'falar / dizer', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">讠</span> fala + <span class="han">兑</span> som' },
+    { hanzi: '说话', pinyin: 'shuō huà', pt: 'falar (conversar)', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">说</span> dizer + <span class="han">话</span> palavra' },
+    { hanzi: '看', pinyin: 'kàn', pt: 'olhar / assistir', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">手</span> mão + <span class="han">目</span> olho — a mão sobre os olhos' },
+    { hanzi: '看见', pinyin: 'kàn jiàn', pt: 'ver (perceber)', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">看</span> olhar + <span class="han">见</span> enxergar' },
+    { hanzi: '听', pinyin: 'tīng', pt: 'ouvir', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">口</span> boca + <span class="han">斤</span> som jin' },
+    { hanzi: '叫', pinyin: 'jiào', pt: 'chamar / chamar-se', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">口</span> boca + <span class="han">丩</span> som jiu' },
+    { hanzi: '买', pinyin: 'mǎi', pt: 'comprar', cat: 'Verbo', lvl: 'A1',
+      etym: 'Par de <span class="han">卖</span> (vender), quase iguais' },
+    { hanzi: '卖', pinyin: 'mài', pt: 'vender', cat: 'Verbo', lvl: 'A2',
+      etym: '<span class="han">买</span> (comprar) com um traço a mais em cima' },
+    { hanzi: '开', pinyin: 'kāi', pt: 'abrir / dirigir / ligar', cat: 'Verbo', lvl: 'A1',
+      etym: 'Duas mãos tirando a tranca da porta' },
+    { hanzi: '坐', pinyin: 'zuò', pt: 'sentar / pegar (transporte)', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">人人</span> duas pessoas + <span class="han">土</span> no chão' },
+    { hanzi: '读', pinyin: 'dú', pt: 'ler', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">讠</span> fala + <span class="han">卖</span> som' },
+    { hanzi: '写', pinyin: 'xiě', pt: 'escrever', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">宀</span> teto + <span class="han">与</span> som' },
+    { hanzi: '打电话', pinyin: 'dǎ diàn huà', pt: 'telefonar', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">打</span> bater + <span class="han">电</span> eletricidade + <span class="han">话</span> palavra' },
+    { hanzi: '认识', pinyin: 'rèn shi', pt: 'conhecer (alguém)', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">认</span> reconhecer + <span class="han">识</span> saber' },
+    { hanzi: '知道', pinyin: 'zhī dào', pt: 'saber (algo)', cat: 'Verbo', lvl: 'A2',
+      etym: '<span class="han">知</span> saber + <span class="han">道</span> caminho' },
+    { hanzi: '学习', pinyin: 'xué xí', pt: 'estudar', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">学</span> aprender + <span class="han">习</span> praticar' },
+    { hanzi: '工作', pinyin: 'gōng zuò', pt: 'trabalhar / trabalho', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">工</span> ofício + <span class="han">作</span> fazer' },
+    { hanzi: '睡觉', pinyin: 'shuì jiào', pt: 'dormir', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">睡</span> dormir + <span class="han">觉</span> sono' },
+    { hanzi: '喜欢', pinyin: 'xǐ huan', pt: 'gostar de', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">喜</span> alegria + <span class="han">欢</span> contentamento' },
+    { hanzi: '爱', pinyin: 'ài', pt: 'amar', cat: 'Verbo', lvl: 'A1',
+      etym: 'Uma mão oferecendo o coração <span class="han">心</span>' },
+    { hanzi: '会', pinyin: 'huì', pt: 'saber fazer (aprendido)', cat: 'Verbo', lvl: 'A1',
+      etym: '我会说 sei falar — habilidade treinada' },
+    { hanzi: '能', pinyin: 'néng', pt: 'poder (ter condição)', cat: 'Verbo', lvl: 'A1',
+      etym: 'Capacidade física ou permissão prática' },
+    { hanzi: '可以', pinyin: 'kě yǐ', pt: 'poder (ter permissão)', cat: 'Verbo', lvl: 'A2',
+      etym: '<span class="han">可</span> permitir + <span class="han">以</span> usar' },
+    { hanzi: '下雨', pinyin: 'xià yǔ', pt: 'chover', cat: 'Verbo', lvl: 'A1',
+      etym: '<span class="han">下</span> cair + <span class="han">雨</span> chuva' },
+    { hanzi: '人', pinyin: 'rén', pt: 'pessoa', cat: 'Pessoas', lvl: 'A1',
+      etym: 'Desenho de duas pernas andando' },
+    { hanzi: '名字', pinyin: 'míng zi', pt: 'nome', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">名</span> nome + <span class="han">字</span> caractere' },
+    { hanzi: '妈妈', pinyin: 'mā ma', pt: 'mãe', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">女</span> mulher + <span class="han">马</span> som ma' },
+    { hanzi: '爸爸', pinyin: 'bà ba', pt: 'pai', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">父</span> pai + <span class="han">巴</span> som ba' },
+    { hanzi: '儿子', pinyin: 'ér zi', pt: 'filho', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">儿</span> criança + <span class="han">子</span> filho' },
+    { hanzi: '女儿', pinyin: 'nǚ ér', pt: 'filha', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">女</span> mulher + <span class="han">儿</span> criança' },
+    { hanzi: '孩子', pinyin: 'hái zi', pt: 'criança / filho', cat: 'Pessoas', lvl: 'A2',
+      etym: '<span class="han">孩</span> criança + <span class="han">子</span> filho' },
+    { hanzi: '哥哥', pinyin: 'gē ge', pt: 'irmão mais velho', cat: 'Pessoas', lvl: 'A2',
+      etym: 'O chinês separa irmão mais velho de mais novo' },
+    { hanzi: '姐姐', pinyin: 'jiě jie', pt: 'irmã mais velha', cat: 'Pessoas', lvl: 'A2',
+      etym: '<span class="han">女</span> mulher + <span class="han">且</span> som jie' },
+    { hanzi: '弟弟', pinyin: 'dì di', pt: 'irmão mais novo', cat: 'Pessoas', lvl: 'A2',
+      etym: 'Par de <span class="han">哥哥</span>' },
+    { hanzi: '妹妹', pinyin: 'mèi mei', pt: 'irmã mais nova', cat: 'Pessoas', lvl: 'A2',
+      etym: '<span class="han">女</span> mulher + <span class="han">未</span> som mei' },
+    { hanzi: '丈夫', pinyin: 'zhàng fu', pt: 'marido', cat: 'Pessoas', lvl: 'A2',
+      etym: '<span class="han">丈</span> medida de altura + <span class="han">夫</span> homem' },
+    { hanzi: '妻子', pinyin: 'qī zi', pt: 'esposa', cat: 'Pessoas', lvl: 'A2',
+      etym: '<span class="han">妻</span> esposa + <span class="han">子</span> sufixo' },
+    { hanzi: '朋友', pinyin: 'péng you', pt: 'amigo', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">朋</span> companheiros + <span class="han">友</span> amizade' },
+    { hanzi: '先生', pinyin: 'xiān sheng', pt: 'senhor / Sr.', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">先</span> primeiro + <span class="han">生</span> nascer — "o que nasceu antes"' },
+    { hanzi: '小姐', pinyin: 'xiǎo jiě', pt: 'senhorita', cat: 'Pessoas', lvl: 'A1',
+      etym: 'Cuidado: em parte da China soa mal; prefira <span class="han">女士</span>' },
+    { hanzi: '老师', pinyin: 'lǎo shī', pt: 'professor', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">老</span> venerável + <span class="han">师</span> mestre' },
+    { hanzi: '学生', pinyin: 'xué sheng', pt: 'aluno', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">学</span> aprender + <span class="han">生</span> pessoa' },
+    { hanzi: '同学', pinyin: 'tóng xué', pt: 'colega de classe', cat: 'Pessoas', lvl: 'A1',
+      etym: '<span class="han">同</span> mesmo + <span class="han">学</span> estudo' },
+    { hanzi: '男人', pinyin: 'nán rén', pt: 'homem', cat: 'Pessoas', lvl: 'A2',
+      etym: '<span class="han">男</span> homem + <span class="han">人</span> pessoa' },
+    { hanzi: '女人', pinyin: 'nǚ rén', pt: 'mulher', cat: 'Pessoas', lvl: 'A2',
+      etym: '<span class="han">女</span> mulher + <span class="han">人</span> pessoa' },
+    { hanzi: '多少', pinyin: 'duō shao', pt: 'quanto? (quantidade)', cat: 'Pergunta', lvl: 'A1',
+      etym: '<span class="han">多</span> muito + <span class="han">少</span> pouco — a pergunta junta os opostos' },
+    { hanzi: '东西', pinyin: 'dōng xi', pt: 'coisa', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">东</span> leste + <span class="han">西</span> oeste — "de leste a oeste"' },
+    { hanzi: '钱', pinyin: 'qián', pt: 'dinheiro', cat: 'Pagamento', lvl: 'A1',
+      etym: '<span class="han">钅</span> metal + <span class="han">戋</span> som jian' },
+    { hanzi: '衣服', pinyin: 'yī fu', pt: 'roupa', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">衣</span> veste + <span class="han">服</span> vestir' },
+    { hanzi: '书', pinyin: 'shū', pt: 'livro', cat: 'Objetos', lvl: 'A1',
+      etym: 'Simplificação de um pincel escrevendo' },
+    { hanzi: '桌子', pinyin: 'zhuō zi', pt: 'mesa', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">桌</span> mesa + <span class="han">子</span> sufixo de objeto' },
+    { hanzi: '椅子', pinyin: 'yǐ zi', pt: 'cadeira', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">木</span> madeira + <span class="han">奇</span> som qi' },
+    { hanzi: '杯子', pinyin: 'bēi zi', pt: 'copo', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">木</span> madeira + <span class="han">不</span> som bu' },
+    { hanzi: '手机', pinyin: 'shǒu jī', pt: 'celular', cat: 'Objetos', lvl: 'A2',
+      etym: '<span class="han">手</span> mão + <span class="han">机</span> máquina' },
+    { hanzi: '手表', pinyin: 'shǒu biǎo', pt: 'relógio de pulso', cat: 'Objetos', lvl: 'A2',
+      etym: '<span class="han">手</span> mão + <span class="han">表</span> mostrador' },
+    { hanzi: '电视', pinyin: 'diàn shì', pt: 'televisão', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">电</span> eletricidade + <span class="han">视</span> ver' },
+    { hanzi: '电脑', pinyin: 'diàn nǎo', pt: 'computador', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">电</span> eletricidade + <span class="han">脑</span> cérebro' },
+    { hanzi: '电影', pinyin: 'diàn yǐng', pt: 'filme', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">电</span> eletricidade + <span class="han">影</span> sombra' },
+    { hanzi: '票', pinyin: 'piào', pt: 'bilhete / ingresso', cat: 'Objetos', lvl: 'A2',
+      etym: 'Aparece em 车票 (passagem) e 电影票 (ingresso)' },
+    { hanzi: '报纸', pinyin: 'bào zhǐ', pt: 'jornal', cat: 'Objetos', lvl: 'A2',
+      etym: '<span class="han">报</span> informar + <span class="han">纸</span> papel' },
+    { hanzi: '药', pinyin: 'yào', pt: 'remédio', cat: 'Objetos', lvl: 'A2',
+      etym: '<span class="han">艹</span> erva + <span class="han">约</span> som yao' },
+    { hanzi: '猫', pinyin: 'māo', pt: 'gato', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">犭</span> animal + <span class="han">苗</span> som miao' },
+    { hanzi: '狗', pinyin: 'gǒu', pt: 'cachorro', cat: 'Objetos', lvl: 'A1',
+      etym: '<span class="han">犭</span> animal + <span class="han">句</span> som gou' },
+    { hanzi: '菜', pinyin: 'cài', pt: 'prato / verdura', cat: 'Comida', lvl: 'A1',
+      etym: '<span class="han">艹</span> planta + <span class="han">采</span> colher' },
+    { hanzi: '苹果', pinyin: 'píng guǒ', pt: 'maçã', cat: 'Comida', lvl: 'A1',
+      etym: '<span class="han">苹</span> som ping + <span class="han">果</span> fruta' },
+    { hanzi: '鸡蛋', pinyin: 'jī dàn', pt: 'ovo', cat: 'Comida', lvl: 'A2',
+      etym: '<span class="han">鸡</span> galinha + <span class="han">蛋</span> ovo' },
+    { hanzi: '牛奶', pinyin: 'niú nǎi', pt: 'leite', cat: 'Comida', lvl: 'A2',
+      etym: '<span class="han">牛</span> vaca + <span class="han">奶</span> leite' },
+    { hanzi: '羊肉', pinyin: 'yáng ròu', pt: 'carne de cordeiro', cat: 'Comida', lvl: 'A2',
+      etym: '<span class="han">羊</span> ovelha + <span class="han">肉</span> carne' },
+    { hanzi: '西瓜', pinyin: 'xī guā', pt: 'melancia', cat: 'Comida', lvl: 'A2',
+      etym: '<span class="han">西</span> oeste + <span class="han">瓜</span> melão' },
+    { hanzi: '天气', pinyin: 'tiān qì', pt: 'tempo (clima)', cat: 'Tempo', lvl: 'A1',
+      etym: '<span class="han">天</span> céu + <span class="han">气</span> ar' },
+    { hanzi: '雪', pinyin: 'xuě', pt: 'neve', cat: 'Tempo', lvl: 'A2',
+      etym: '<span class="han">雨</span> chuva + <span class="han">彐</span> mão que varre' },
+    { hanzi: '字', pinyin: 'zì', pt: 'caractere', cat: 'Escola', lvl: 'A1',
+      etym: '<span class="han">宀</span> teto + <span class="han">子</span> filho — o que nasce sob o teto' },
+    { hanzi: '汉语', pinyin: 'Hàn yǔ', pt: 'língua chinesa', cat: 'Escola', lvl: 'A1',
+      etym: '<span class="han">汉</span> etnia han + <span class="han">语</span> língua' },
+    { hanzi: '课', pinyin: 'kè', pt: 'aula / lição', cat: 'Escola', lvl: 'A2',
+      etym: '<span class="han">讠</span> fala + <span class="han">果</span> som guo' },
+    { hanzi: '考试', pinyin: 'kǎo shì', pt: 'prova', cat: 'Escola', lvl: 'A2',
+      etym: '<span class="han">考</span> examinar + <span class="han">试</span> testar' },
+    { hanzi: '问题', pinyin: 'wèn tí', pt: 'pergunta / problema', cat: 'Escola', lvl: 'A2',
+      etym: '<span class="han">问</span> perguntar + <span class="han">题</span> questão' },
+    { hanzi: '意思', pinyin: 'yì si', pt: 'significado', cat: 'Escola', lvl: 'A2',
+      etym: '<span class="han">意</span> ideia + <span class="han">思</span> pensar' },
+    { hanzi: '中国', pinyin: 'Zhōng guó', pt: 'China', cat: 'Lugares', lvl: 'A1',
+      etym: '<span class="han">中</span> centro + <span class="han">国</span> país — "o país do meio"' },
+    { hanzi: '北京', pinyin: 'Běi jīng', pt: 'Pequim', cat: 'Lugares', lvl: 'A1',
+      etym: '<span class="han">北</span> norte + <span class="han">京</span> capital' },
+    { hanzi: '家', pinyin: 'jiā', pt: 'casa / família', cat: 'Lugares', lvl: 'A1',
+      etym: '<span class="han">宀</span> teto + <span class="han">豕</span> porco — casa antiga com o animal dentro' },
+    { hanzi: '学校', pinyin: 'xué xiào', pt: 'escola', cat: 'Lugares', lvl: 'A1',
+      etym: '<span class="han">学</span> aprender + <span class="han">校</span> escola' },
+    { hanzi: '饭店', pinyin: 'fàn diàn', pt: 'restaurante / hotel', cat: 'Lugares', lvl: 'A1',
+      etym: '<span class="han">饭</span> refeição + <span class="han">店</span> estabelecimento' },
+    { hanzi: '公司', pinyin: 'gōng sī', pt: 'empresa', cat: 'Lugares', lvl: 'A2',
+      etym: '<span class="han">公</span> público + <span class="han">司</span> administrar' },
+    { hanzi: '路', pinyin: 'lù', pt: 'rua / caminho', cat: 'Direções', lvl: 'A2',
+      etym: '<span class="han">足</span> pé + <span class="han">各</span> som ge' },
+    { hanzi: '上', pinyin: 'shàng', pt: 'em cima / subir', cat: 'Direções', lvl: 'A1',
+      etym: 'Um traço acima da linha de base' },
+    { hanzi: '下', pinyin: 'xià', pt: 'embaixo / descer', cat: 'Direções', lvl: 'A1',
+      etym: 'Um traço abaixo da linha de base' },
+    { hanzi: '里', pinyin: 'lǐ', pt: 'dentro', cat: 'Direções', lvl: 'A1',
+      etym: 'Também aparece como 里面' },
+    { hanzi: '外', pinyin: 'wài', pt: 'fora', cat: 'Direções', lvl: 'A2',
+      etym: 'Par de <span class="han">里</span> (dentro)' },
+    { hanzi: '前面', pinyin: 'qián miàn', pt: 'na frente', cat: 'Direções', lvl: 'A1',
+      etym: '<span class="han">前</span> antes + <span class="han">面</span> lado' },
+    { hanzi: '后面', pinyin: 'hòu miàn', pt: 'atrás', cat: 'Direções', lvl: 'A1',
+      etym: '<span class="han">后</span> depois + <span class="han">面</span> lado' },
+    { hanzi: '旁边', pinyin: 'páng biān', pt: 'ao lado', cat: 'Direções', lvl: 'A2',
+      etym: '<span class="han">旁</span> ao lado + <span class="han">边</span> borda' },
+    { hanzi: '大', pinyin: 'dà', pt: 'grande', cat: 'Adjetivo', lvl: 'A1',
+      etym: 'Uma pessoa de braços abertos' },
+    { hanzi: '小', pinyin: 'xiǎo', pt: 'pequeno', cat: 'Adjetivo', lvl: 'A1',
+      etym: 'Três traços minúsculos' },
+    { hanzi: '多', pinyin: 'duō', pt: 'muito', cat: 'Adjetivo', lvl: 'A1',
+      etym: 'Duas noites <span class="han">夕</span> empilhadas' },
+    { hanzi: '少', pinyin: 'shǎo', pt: 'pouco', cat: 'Adjetivo', lvl: 'A1',
+      etym: '<span class="han">小</span> (pequeno) com um traço a mais' },
+    { hanzi: '热', pinyin: 'rè', pt: 'quente', cat: 'Adjetivo', lvl: 'A1',
+      etym: 'Radical <span class="han">灬</span> (fogo) embaixo' },
+    { hanzi: '冷', pinyin: 'lěng', pt: 'frio', cat: 'Adjetivo', lvl: 'A1',
+      etym: '<span class="han">冫</span> gelo + <span class="han">令</span> som ling' },
+    { hanzi: '漂亮', pinyin: 'piào liang', pt: 'bonito', cat: 'Adjetivo', lvl: 'A1',
+      etym: '<span class="han">漂</span> lustroso + <span class="han">亮</span> brilhante' },
+    { hanzi: '高兴', pinyin: 'gāo xìng', pt: 'contente', cat: 'Adjetivo', lvl: 'A1',
+      etym: '<span class="han">高</span> alto + <span class="han">兴</span> ânimo' },
+    { hanzi: '快', pinyin: 'kuài', pt: 'rápido', cat: 'Adjetivo', lvl: 'A2',
+      etym: '<span class="han">忄</span> coração + <span class="han">夬</span> som guai' },
+    { hanzi: '慢', pinyin: 'màn', pt: 'devagar', cat: 'Adjetivo', lvl: 'A2',
+      etym: '<span class="han">忄</span> coração + <span class="han">曼</span> som man' },
+    { hanzi: '新', pinyin: 'xīn', pt: 'novo', cat: 'Adjetivo', lvl: 'A2',
+      etym: '<span class="han">亲</span> som qin + <span class="han">斤</span> machado' },
+    { hanzi: '忙', pinyin: 'máng', pt: 'ocupado', cat: 'Adjetivo', lvl: 'A2',
+      etym: '<span class="han">忄</span> coração + <span class="han">亡</span> perdido — coração sem tempo' },
+    { hanzi: '累', pinyin: 'lèi', pt: 'cansado', cat: 'Adjetivo', lvl: 'A2',
+      etym: '<span class="han">田</span> campo + <span class="han">糸</span> fio' },
+    { hanzi: '长', pinyin: 'cháng', pt: 'comprido', cat: 'Adjetivo', lvl: 'A2',
+      etym: 'Cabelo comprido ao vento' },
+    { hanzi: '高', pinyin: 'gāo', pt: 'alto', cat: 'Adjetivo', lvl: 'A2',
+      etym: 'Desenho de uma torre' },
+    { hanzi: '红', pinyin: 'hóng', pt: 'vermelho', cat: 'Cores', lvl: 'A2',
+      etym: '<span class="han">纟</span> seda + <span class="han">工</span> som gong — a cor da sorte' },
+    { hanzi: '白', pinyin: 'bái', pt: 'branco', cat: 'Cores', lvl: 'A2',
+      etym: 'Também significa "em vão"' },
+    { hanzi: '黑', pinyin: 'hēi', pt: 'preto', cat: 'Cores', lvl: 'A2',
+      etym: 'Fuligem sobre o fogo' },
+    { hanzi: '颜色', pinyin: 'yán sè', pt: 'cor', cat: 'Cores', lvl: 'A2',
+      etym: '<span class="han">颜</span> rosto + <span class="han">色</span> cor' },
+    { hanzi: '很', pinyin: 'hěn', pt: 'muito', cat: 'Gramática', lvl: 'A1',
+      etym: 'Obrigatório antes de adjetivo: 我很好' },
+    { hanzi: '太', pinyin: 'tài', pt: 'demais', cat: 'Gramática', lvl: 'A1',
+      etym: 'Vem sempre com <span class="han">了</span>: 太贵了' },
+    { hanzi: '都', pinyin: 'dōu', pt: 'todos / ambos', cat: 'Gramática', lvl: 'A1',
+      etym: 'Vai antes do verbo: 我们都去' },
+    { hanzi: '不', pinyin: 'bù', pt: 'não', cat: 'Gramática', lvl: 'A1',
+      etym: 'Nega tudo, menos o verbo ter' },
+    { hanzi: '没', pinyin: 'méi', pt: 'não (ter / passado)', cat: 'Gramática', lvl: 'A1',
+      etym: 'Só com <span class="han">有</span> e com o passado' },
+    { hanzi: '的', pinyin: 'de', pt: 'partícula de posse', cat: 'Gramática', lvl: 'A1',
+      etym: '我的 meu, 你的 teu' },
+    { hanzi: '了', pinyin: 'le', pt: 'partícula de mudança', cat: 'Gramática', lvl: 'A1',
+      etym: 'Marca que algo aconteceu ou mudou' },
+    { hanzi: '吗', pinyin: 'ma', pt: 'partícula de pergunta', cat: 'Gramática', lvl: 'A1',
+      etym: 'No fim da frase vira pergunta de sim/não' },
+    { hanzi: '呢', pinyin: 'ne', pt: 'e...? (devolve a pergunta)', cat: 'Gramática', lvl: 'A1',
+      etym: '你呢? E você?' },
+    { hanzi: '吧', pinyin: 'ba', pt: 'partícula de sugestão', cat: 'Gramática', lvl: 'A2',
+      etym: '我们走吧 vamos' },
+    { hanzi: '和', pinyin: 'hé', pt: 'e (liga substantivos)', cat: 'Gramática', lvl: 'A1',
+      etym: 'Não liga frases, só coisas' },
+    { hanzi: '也', pinyin: 'yě', pt: 'também', cat: 'Gramática', lvl: 'A2',
+      etym: 'Vai antes do verbo: 我也是' },
+    { hanzi: '很多', pinyin: 'hěn duō', pt: 'muitos', cat: 'Gramática', lvl: 'A2',
+      etym: '<span class="han">很</span> muito + <span class="han">多</span> muitos' },
+    { hanzi: '非常', pinyin: 'fēi cháng', pt: 'extremamente', cat: 'Gramática', lvl: 'A2',
+      etym: '<span class="han">非</span> não + <span class="han">常</span> comum — "fora do comum"' },
+    { hanzi: '最', pinyin: 'zuì', pt: 'o mais (superlativo)', cat: 'Gramática', lvl: 'A2',
+      etym: '最好 o melhor' },
+    { hanzi: '因为', pinyin: 'yīn wèi', pt: 'porque', cat: 'Gramática', lvl: 'A2',
+      etym: '<span class="han">因</span> causa + <span class="han">为</span> por' },
+    { hanzi: '所以', pinyin: 'suǒ yǐ', pt: 'então / por isso', cat: 'Gramática', lvl: 'A2',
+      etym: 'Par de <span class="han">因为</span>' },
+    { hanzi: '但是', pinyin: 'dàn shì', pt: 'mas', cat: 'Gramática', lvl: 'A2',
+      etym: '<span class="han">但</span> porém + <span class="han">是</span> ser' },
+    { hanzi: '喂', pinyin: 'wèi', pt: 'alô (ao telefone)', cat: 'Saudação', lvl: 'A1',
+      etym: '<span class="han">口</span> boca + <span class="han">畏</span> som wei' },
+    { hanzi: '欢迎', pinyin: 'huān yíng', pt: 'bem-vindo', cat: 'Saudação', lvl: 'A2',
+      etym: '<span class="han">欢</span> alegria + <span class="han">迎</span> receber' },
   ];
 
   // ─── localStorage (progresso persistente) ───
@@ -1391,6 +1728,17 @@
       areaGrid.appendChild(card);
     };
     make('all', 'Todas as palavras', true);
+    [['A1', 'Teste A1', '试'], ['A2', 'Teste A2', '考']].forEach(([lvl, label, han]) => {
+      const total = deck.filter(c => c.lvl === lvl).length;
+      const b = document.createElement('button');
+      b.className = 'area-card quiz-entry';
+      b.innerHTML =
+        '<div class="area-han">' + han + '</div>' +
+        '<div class="area-name">' + label + '</div>' +
+        '<div class="area-count">' + total + ' palavras do nível</div>';
+      b.addEventListener('click', () => startQuiz(lvl));
+      areaGrid.appendChild(b);
+    });
     categories().forEach(cat => make(cat, cat, false));
   }
 
@@ -1477,6 +1825,116 @@
     closePanel();
     startSession(list);
   });
+
+  // ─── Teste de nível (A1 / A2) ───
+  const quizEl = document.getElementById('quiz');
+  const quizBody = document.getElementById('quizBody');
+  const quizResult = document.getElementById('quizResult');
+  const quizBar = document.getElementById('quizBar');
+  const quizTitle = document.getElementById('quizTitle');
+  const QUIZ_SIZE = 15;
+  let quizQs = [], quizAt = 0, quizHits = 0, quizMissed = [], quizLevel = 'A1';
+
+  function startQuiz(level) {
+    quizLevel = level;
+    const pool = deck.filter(c => c.lvl === level);
+    if (pool.length < 4) return;
+    quizQs = shuffle(pool).slice(0, Math.min(QUIZ_SIZE, pool.length)).map((card, i) => {
+      const others = shuffle(pool.filter(x => x.hanzi !== card.hanzi && x.pt !== card.pt)).slice(0, 3);
+      return { card: card, askHan: i % 2 === 0, opts: shuffle([card].concat(others)) };
+    });
+    quizAt = 0; quizHits = 0; quizMissed = [];
+    quizTitle.textContent = 'Teste ' + level;
+    quizResult.hidden = true;
+    quizBody.hidden = false;
+    quizEl.classList.add('active');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    if (quizAt >= quizQs.length) return finishQuiz();
+    const q = quizQs[quizAt];
+    quizBar.style.width = (quizAt / quizQs.length * 100) + '%';
+    quizBody.innerHTML = '';
+
+    const step = document.createElement('div');
+    step.className = 'quiz-step';
+    step.textContent = 'Pergunta ' + (quizAt + 1) + ' de ' + quizQs.length;
+    quizBody.appendChild(step);
+
+    const ask = document.createElement('div');
+    ask.className = 'quiz-ask';
+    ask.innerHTML = q.askHan
+      ? '<div class="quiz-ask-han">' + q.card.hanzi + '</div><div class="quiz-ask-pin">' + q.card.pinyin + '</div>'
+      : '<div class="quiz-ask-pt">' + q.card.pt + '</div>';
+    quizBody.appendChild(ask);
+
+    const box = document.createElement('div');
+    box.className = 'quiz-opts';
+    q.opts.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'quiz-opt';
+      b.innerHTML = q.askHan
+        ? opt.pt
+        : '<span class="han">' + opt.hanzi + '</span> <span style="opacity:.6;font-style:italic">' + opt.pinyin + '</span>';
+      b.addEventListener('click', () => answer(b, opt, q));
+      box.appendChild(b);
+    });
+    quizBody.appendChild(box);
+  }
+
+  function answer(btn, opt, q) {
+    const certo = opt.hanzi === q.card.hanzi;
+    quizBody.querySelectorAll('.quiz-opt').forEach(b => { b.disabled = true; });
+    btn.classList.add(certo ? 'right' : 'wrong');
+    if (certo) {
+      quizHits++;
+    } else {
+      quizMissed.push(q.card);
+      // O que errou entra na fila de revisão do baralho.
+      markCard(q.card.hanzi, 'review');
+      quizBody.querySelectorAll('.quiz-opt').forEach(b => {
+        if (b.textContent.indexOf(q.card.hanzi) === 0 || b.textContent === q.card.pt) b.classList.add('right');
+      });
+    }
+    setTimeout(() => { quizAt++; renderQuestion(); }, certo ? 450 : 1100);
+  }
+
+  function finishQuiz() {
+    quizBar.style.width = '100%';
+    const pct = Math.round(quizHits / quizQs.length * 100);
+    const veredito = pct >= 85 ? 'Você domina o nível ' + quizLevel
+                   : pct >= 60 ? 'Quase lá'
+                   : 'Precisa treinar mais';
+    quizBody.hidden = true;
+    quizResult.hidden = false;
+    quizResult.innerHTML =
+      '<div class="quiz-score">' + pct + '%</div>' +
+      '<div class="quiz-verdict">' + veredito + '</div>' +
+      '<div class="quiz-detail">' + quizHits + ' de ' + quizQs.length + ' certas · ' +
+        quizMissed.length + ' para revisar</div>' +
+      '<div class="quiz-actions">' +
+        (quizMissed.length ? '<button class="primary" id="quizTrain">Treinar os erros</button>' : '') +
+        '<button id="quizAgain">Refazer o teste</button>' +
+        '<button id="quizBack">Voltar às áreas</button>' +
+      '</div>';
+    const t = document.getElementById('quizTrain');
+    if (t) t.addEventListener('click', () => {
+      const errs = quizMissed.slice();
+      closeQuiz(); closePanel(); startSession(errs);
+    });
+    document.getElementById('quizAgain').addEventListener('click', () => startQuiz(quizLevel));
+    document.getElementById('quizBack').addEventListener('click', closeQuiz);
+  }
+
+  function closeQuiz() {
+    quizEl.classList.remove('active');
+    quizBody.hidden = false;
+    quizResult.hidden = true;
+    renderAreas();
+  }
+
+  document.getElementById('closeQuiz').addEventListener('click', closeQuiz);
 
   document.getElementById('resetProgress').addEventListener('click', () => {
     if (confirm('Limpar todo o progresso? Esta ação não pode ser desfeita.')) {
