@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旅行 · Chinês para Viagem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --ink: #1a1612; --paper: #f4ede0; --vermilion: #c8392e;
+    --gold: #b8893e; --jade: #4a7856;
+  }
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  body {
+    font-family: 'Cormorant Garamond', serif;
+    background: var(--paper); color: var(--ink);
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(184, 137, 62, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(200, 57, 46, 0.06) 0%, transparent 50%);
+    user-select: none; -webkit-user-select: none;
+  }
+  .app {
+    height: 100vh; height: 100dvh; display: flex; flex-direction: column;
+    max-width: 480px; margin: 0 auto; position: relative;
+  }
+  header {
+    padding: 18px 24px 12px; display: flex;
+    justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(26, 22, 18, 0.08);
+  }
+  .brand { display: flex; flex-direction: column; gap: 2px; }
+  .brand-cn {
+    font-family: 'Noto Serif SC', serif; font-size: 22px;
+    font-weight: 700; letter-spacing: 4px; color: var(--vermilion); line-height: 1;
+  }
+  .brand-sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--ink); opacity: 0.5;
+  }
+  .header-right { display: flex; align-items: center; gap: 14px; }
+  .stats { display: flex; gap: 14px; }
+  .stat {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    cursor: pointer; padding: 4px 6px; border-radius: 4px;
+    transition: background 0.15s;
+  }
+  .stat:active { background: rgba(26, 22, 18, 0.06); }
+  .stat-num { font-size: 18px; font-family: 'Cormorant Garamond', serif; }
+  .stat-likes .stat-num { color: var(--jade); }
+  .stat-dislikes .stat-num { color: var(--vermilion); }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 8px;
+    letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.5;
+  }
+  .menu-btn {
+    width: 32px; height: 32px; border: 1px solid rgba(26,22,18,0.2);
+    background: transparent; border-radius: 4px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 3px; padding: 8px;
+  }
+  .menu-btn span {
+    display: block; width: 14px; height: 1.5px; background: var(--ink);
+  }
+  .progress { height: 2px; background: rgba(26, 22, 18, 0.08); margin: 0 24px; }
+  .progress-fill { height: 100%; background: var(--vermilion); transition: width 0.3s; width: 0%; }
+  .stage {
+    flex: 1; position: relative; display: flex;
+    align-items: center; justify-content: center; padding: 16px; overflow: hidden;
+  }
+  .stage::after {
+    content: '游'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); font-family: 'Noto Serif SC', serif;
+    font-size: 320px; color: var(--vermilion); opacity: 0.025;
+    pointer-events: none; z-index: 0;
+  }
+  .card {
+    width: 100%; max-width: 340px; aspect-ratio: 3/4.2;
+    position: relative; cursor: grab; touch-action: none; z-index: 1;
+    transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  .card.dragging { transition: none; cursor: grabbing; }
+  .card.exit-right { animation: exitRight 0.5s cubic-bezier(0.4, 0.0, 0.2, 1) forwards; }
+  .card.exit-left { animation: exitLeft 0.5s cubic-bezier(0.4, 0.0, 0.2, 1) forwards; }
+  @keyframes exitRight { to { transform: translateX(150%) rotate(25deg); opacity: 0; } }
+  @keyframes exitLeft { to { transform: translateX(-150%) rotate(-25deg); opacity: 0; } }
+  .card.enter { animation: enterCard 0.4s cubic-bezier(0.4, 0.0, 0.2, 1); }
+  @keyframes enterCard {
+    from { transform: scale(0.92) translateY(20px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  .face {
+    position: absolute; inset: 0; border-radius: 4px; overflow: hidden;
+    display: flex; flex-direction: column; padding: 24px 22px;
+    box-shadow: 0 1px 2px rgba(26, 22, 18, 0.1), 0 12px 32px rgba(26, 22, 18, 0.18), 0 24px 60px rgba(26, 22, 18, 0.12);
+    background: linear-gradient(180deg, #faf3e6 0%, #f4ede0 100%);
+    border: 1px solid rgba(184, 137, 62, 0.2);
+    transition: opacity 0.25s; align-items: center; justify-content: space-between;
+  }
+  .face.back {
+    background: linear-gradient(180deg, #1a1612 0%, #2a221b 100%);
+    color: var(--paper); border: 1px solid rgba(184, 137, 62, 0.3);
+    opacity: 0; pointer-events: none;
+  }
+  .card.revealed .face.front { opacity: 0; pointer-events: none; }
+  .card.revealed .face.back { opacity: 1; pointer-events: auto; }
+  .corner { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; }
+  .corner-mark {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 2px; opacity: 0.4; text-transform: uppercase;
+  }
+  .face.back .corner-mark { color: var(--paper); opacity: 0.5; }
+  .corner-stamp {
+    width: 28px; height: 28px; border: 1.5px solid var(--vermilion);
+    border-radius: 2px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Noto Serif SC', serif; font-size: 14px;
+    color: var(--vermilion); transform: rotate(-3deg);
+  }
+  .face.back .corner-stamp { border-color: var(--gold); color: var(--gold); }
+  .character {
+    font-family: 'Noto Serif SC', serif; font-weight: 500;
+    color: var(--ink); line-height: 1.05; text-align: center;
+    flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0;
+  }
+  .character[data-len="1"] { font-size: 120px; letter-spacing: -4px; }
+  .character[data-len="2"] { font-size: 76px; }
+  .character[data-len="3"] { font-size: 54px; }
+  .character[data-len="4"] { font-size: 44px; }
+  .character[data-len="5"] { font-size: 36px; }
+  .character[data-len="6"] { font-size: 30px; }
+  .character[data-len="7"] { font-size: 26px; }
+  .character[data-len="8"] { font-size: 23px; }
+  .character[data-len="9"] { font-size: 21px; }
+  .front-pinyin {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 22px; color: var(--gold); letter-spacing: 1px;
+    text-align: center; padding: 0 12px;
+    margin-top: -4px; margin-bottom: 4px;
+  }
+  .audio-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1.5px solid var(--gold);
+    background: rgba(184, 137, 62, 0.1);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; color: var(--gold); font-size: 14px;
+    margin: 6px auto 0;
+  }
+  .audio-btn:active { transform: scale(0.9); }
+  .audio-btn.playing {
+    background: var(--gold); color: var(--paper);
+    animation: pulse 0.8s ease-in-out infinite;
+  }
+  .audio-btn.disabled { opacity: 0.3; cursor: not-allowed; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(184, 137, 62, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(184, 137, 62, 0); }
+  }
+  .face.back .audio-btn { background: rgba(184, 137, 62, 0.18); }
+  .back-content {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    gap: 10px; text-align: center; padding: 6px 0; width: 100%; overflow-y: auto;
+  }
+  .pinyin {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 24px; color: var(--gold); letter-spacing: 1px;
+  }
+  .divider { width: 36px; height: 1px; background: var(--gold); margin: 4px auto; opacity: 0.6; }
+  .translation {
+    font-family: 'Cormorant Garamond', serif; font-size: 26px;
+    font-weight: 500; line-height: 1.2; padding: 0 8px; color: var(--paper);
+  }
+  .category {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--gold); opacity: 0.8;
+  }
+  .etymology {
+    font-family: 'Cormorant Garamond', serif; font-size: 14px;
+    font-style: italic; color: var(--paper); opacity: 0.78;
+    line-height: 1.45; padding: 10px 12px; margin-top: 6px;
+    border-top: 1px dashed rgba(184, 137, 62, 0.3);
+    border-bottom: 1px dashed rgba(184, 137, 62, 0.3);
+  }
+  .etymology .han {
+    font-family: 'Noto Serif SC', serif; font-style: normal;
+    color: var(--gold); font-size: 16px; font-weight: 500;
+  }
+  .footer {
+    width: 100%; text-align: center;
+    border-top: 1px solid rgba(26, 22, 18, 0.1);
+    padding-top: 12px; margin-top: 8px;
+  }
+  .face.back .footer { border-top-color: rgba(244, 237, 224, 0.15); }
+  .hint {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 2.5px; text-transform: uppercase; opacity: 0.45;
+  }
+  .indicator {
+    position: absolute; top: 24px; padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 3px; text-transform: uppercase;
+    border: 2px solid; border-radius: 2px; opacity: 0;
+    transition: opacity 0.15s; pointer-events: none; font-weight: 700; z-index: 2;
+  }
+  .indicator.like { right: 24px; color: var(--jade); border-color: var(--jade); transform: rotate(12deg); }
+  .indicator.dislike { left: 24px; color: var(--vermilion); border-color: var(--vermilion); transform: rotate(-12deg); }
+  .controls {
+    padding: 16px 24px 24px; display: flex; justify-content: center;
+    align-items: center; gap: 28px;
+    border-top: 1px solid rgba(26, 22, 18, 0.08);
+  }
+  .btn {
+    width: 60px; height: 60px; border-radius: 50%; border: 1.5px solid;
+    background: var(--paper); cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: transform 0.15s; font-size: 22px;
+  }
+  .btn:active { transform: scale(0.92); }
+  .btn-dislike { border-color: var(--vermilion); color: var(--vermilion); }
+  .btn-like { border-color: var(--jade); color: var(--jade); }
+  .btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .btn-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 8px;
+    letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.5;
+  }
+  .done {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px; text-align: center; background: var(--paper); z-index: 10;
+  }
+  .done.active { display: flex; }
+  .done-char { font-family: 'Noto Serif SC', serif; font-size: 100px; color: var(--vermilion); margin-bottom: 12px; }
+  .done-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 32px; margin-bottom: 8px; }
+  .done-sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 2px; opacity: 0.5; text-transform: uppercase; margin-bottom: 24px;
+  }
+  .done-stats { display: flex; gap: 40px; margin-bottom: 28px; }
+  .done-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 48px; line-height: 1; }
+  .done-stat-num.jade { color: var(--jade); }
+  .done-stat-num.verm { color: var(--vermilion); }
+  .done-stat-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; margin-top: 6px;
+  }
+  .done-buttons { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 240px; }
+  .restart, .review-btn, .all-btn {
+    border: none; padding: 14px 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; border-radius: 2px;
+  }
+  .restart { background: var(--ink); color: var(--paper); }
+  .review-btn { background: var(--vermilion); color: var(--paper); }
+  .all-btn { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+
+  /* Panel (lista de palavras) */
+  .panel {
+    position: absolute; inset: 0; background: var(--paper);
+    z-index: 20; display: none; flex-direction: column;
+  }
+  .panel.active { display: flex; }
+  .panel-header {
+    padding: 18px 24px 12px; display: flex; align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(26, 22, 18, 0.08);
+  }
+  .panel-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 20px; color: var(--vermilion);
+    font-weight: 700; letter-spacing: 2px;
+  }
+  .close-btn {
+    width: 32px; height: 32px; border: 1px solid rgba(26,22,18,0.2);
+    background: transparent; border-radius: 4px; cursor: pointer;
+    font-size: 16px; display: flex; align-items: center; justify-content: center;
+    color: var(--ink);
+  }
+  .tabs {
+    display: flex; padding: 0 24px; gap: 0;
+    border-bottom: 1px solid rgba(26, 22, 18, 0.08);
+  }
+  .tab {
+    flex: 1; padding: 14px 8px; background: transparent; border: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+    color: var(--ink); opacity: 0.5; position: relative;
+    transition: opacity 0.2s;
+  }
+  .tab.active { opacity: 1; }
+  .tab.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 50%;
+    transform: translateX(-50%); width: 60%; height: 2px;
+    background: var(--vermilion);
+  }
+  .tab-count { font-size: 9px; opacity: 0.6; margin-left: 4px; }
+  .cats {
+    display: flex; gap: 6px; padding: 12px 24px;
+    overflow-x: auto; border-bottom: 1px solid rgba(26, 22, 18, 0.06);
+    scrollbar-width: none;
+  }
+  .cats::-webkit-scrollbar { display: none; }
+  .cat-chip {
+    flex-shrink: 0; padding: 6px 12px; border-radius: 2px;
+    border: 1px solid rgba(26, 22, 18, 0.2); background: transparent;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; color: var(--ink); opacity: 0.6;
+  }
+  .cat-chip.active {
+    background: var(--ink); color: var(--paper);
+    border-color: var(--ink); opacity: 1;
+  }
+  .panel-content { flex: 1; overflow-y: auto; padding: 8px 0; }
+  .word-row {
+    display: flex; align-items: center; padding: 14px 24px;
+    border-bottom: 1px solid rgba(26, 22, 18, 0.06);
+    gap: 14px; cursor: pointer; transition: background 0.15s;
+  }
+  .word-row:active { background: rgba(26, 22, 18, 0.04); }
+  .word-hanzi {
+    font-family: 'Noto Serif SC', serif; font-size: 24px;
+    font-weight: 500; color: var(--ink);
+    min-width: 80px; flex-shrink: 0;
+  }
+  .word-info { flex: 1; min-width: 0; }
+  .word-pinyin {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    color: var(--gold); font-size: 15px; margin-bottom: 2px;
+  }
+  .word-pt {
+    font-family: 'Cormorant Garamond', serif; font-size: 16px;
+    color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .word-audio {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--gold); background: rgba(184, 137, 62, 0.08);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--gold); font-size: 12px; flex-shrink: 0;
+  }
+  .word-audio:active { transform: scale(0.9); }
+  .word-audio.playing { background: var(--gold); color: var(--paper); }
+  .word-status {
+    width: 6px; height: 40px; border-radius: 3px; flex-shrink: 0;
+  }
+  .word-status.know { background: var(--jade); }
+  .word-status.review { background: var(--vermilion); }
+  .word-status.unseen { background: rgba(26, 22, 18, 0.15); }
+  .empty {
+    padding: 60px 24px; text-align: center; opacity: 0.5;
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 18px;
+  }
+  .panel-footer {
+    padding: 14px 24px; border-top: 1px solid rgba(26, 22, 18, 0.08);
+    display: flex; gap: 10px;
+  }
+  .panel-footer button {
+    flex: 1; padding: 12px; border: 1px solid rgba(26,22,18,0.2);
+    background: transparent; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; border-radius: 2px; color: var(--ink);
+  }
+  .panel-footer button.danger { color: var(--vermilion); border-color: var(--vermilion); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="brand-cn">旅行汉语</div>
+      <div class="brand-sub">Chinês · Viagem</div>
+    </div>
+    <div class="header-right">
+      <div class="stats">
+        <div class="stat stat-likes" id="openKnow">
+          <div class="stat-num" id="likes">0</div>
+          <div class="stat-label">Sei</div>
+        </div>
+        <div class="stat stat-dislikes" id="openReview">
+          <div class="stat-num" id="dislikes">0</div>
+          <div class="stat-label">Revisar</div>
+        </div>
+      </div>
+      <button class="menu-btn" id="openMenu" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+  <div class="progress"><div class="progress-fill" id="progress"></div></div>
+  <div class="stage">
+    <div class="card" id="card">
+      <div class="indicator like">Sei!</div>
+      <div class="indicator dislike">Revisar</div>
+      <div class="face front">
+        <div class="corner">
+          <div class="corner-mark" id="cardNum">№ 01</div>
+          <div class="corner-stamp">印</div>
+        </div>
+        <div class="character" id="char" data-len="2">你好</div>
+        <div class="front-pinyin" id="frontPinyin">nǐ hǎo</div>
+        <button class="audio-btn" id="audioBtnFront" aria-label="Ouvir">♪</button>
+        <div class="footer"><div class="hint">Toque para ver tradução</div></div>
+      </div>
+      <div class="face back">
+        <div class="corner">
+          <div class="corner-mark" id="cardNumBack">№ 01</div>
+          <div class="corner-stamp">译</div>
+        </div>
+        <div class="back-content">
+          <div class="category" id="category">Saudação</div>
+          <div class="pinyin" id="pinyin">nǐ hǎo</div>
+          <button class="audio-btn" id="audioBtnBack" aria-label="Ouvir">♪</button>
+          <div class="divider"></div>
+          <div class="translation" id="translation">olá</div>
+          <div class="etymology" id="etymology"></div>
+        </div>
+        <div class="footer"><div class="hint">← Revisar · Sei →</div></div>
+      </div>
+    </div>
+    <div class="done" id="done">
+      <div class="done-char">到</div>
+      <div class="done-title">完成了</div>
+      <div class="done-sub">Sessão concluída</div>
+      <div class="done-stats">
+        <div><div class="done-stat-num jade" id="finalLikes">0</div><div class="done-stat-label">Acertos</div></div>
+        <div><div class="done-stat-num verm" id="finalDislikes">0</div><div class="done-stat-label">Revisar</div></div>
+      </div>
+      <div class="done-buttons">
+        <button class="review-btn" id="reviewOnly">Treinar só os de revisar</button>
+        <button class="all-btn" id="restart">Recomeçar com todas</button>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="btn-wrap"><button class="btn btn-dislike" id="btnDislike">✕</button><span class="btn-label">Revisar</span></div>
+    <div class="btn-wrap"><button class="btn btn-like" id="btnLike">✓</button><span class="btn-label">Sei</span></div>
+  </div>
+
+  <!-- Panel: lista de palavras -->
+  <div class="panel" id="panel">
+    <div class="panel-header">
+      <div class="panel-title" id="panelTitle">词汇 · Vocabulário</div>
+      <button class="close-btn" id="closePanel">✕</button>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="know">Sei <span class="tab-count" id="countKnow">0</span></button>
+      <button class="tab" data-tab="review">Revisar <span class="tab-count" id="countReview">0</span></button>
+      <button class="tab" data-tab="all">Todas <span class="tab-count" id="countAll">0</span></button>
+    </div>
+    <div class="cats" id="cats"></div>
+    <div class="panel-content" id="panelContent"></div>
+    <div class="panel-footer">
+      <button id="trainSelected">Treinar esta lista</button>
+      <button class="danger" id="resetProgress">Limpar progresso</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const deck = [
+    { hanzi: '你好', pinyin: 'nǐ hǎo', pt: 'olá', cat: 'Saudação',
+      etym: '<span class="han">你</span> (você) + <span class="han">好</span> (bom) = "você bem"' },
+    { hanzi: '早上好', pinyin: 'zǎo shang hǎo', pt: 'bom dia', cat: 'Saudação',
+      etym: '<span class="han">早上</span> (manhã, lit. "cedo em cima") + <span class="han">好</span> (bom)' },
+    { hanzi: '晚上好', pinyin: 'wǎn shang hǎo', pt: 'boa noite', cat: 'Saudação',
+      etym: '<span class="han">晚上</span> (noite) + <span class="han">好</span> (bom)' },
+    { hanzi: '再见', pinyin: 'zài jiàn', pt: 'até logo / tchau', cat: 'Despedida',
+      etym: '<span class="han">再</span> (de novo) + <span class="han">见</span> (ver) = "até nos vermos de novo"' },
+    { hanzi: '谢谢', pinyin: 'xiè xie', pt: 'obrigado', cat: 'Cortesia',
+      etym: 'Repetição de <span class="han">谢</span> (agradecer)' },
+    { hanzi: '不客气', pinyin: 'bú kè qi', pt: 'de nada', cat: 'Cortesia',
+      etym: '<span class="han">不</span> (não) + <span class="han">客气</span> (cerimônia)' },
+    { hanzi: '对不起', pinyin: 'duì bu qǐ', pt: 'desculpe', cat: 'Cortesia',
+      etym: '<span class="han">对</span> (encarar) + <span class="han">不起</span> (não consigo)' },
+    { hanzi: '没关系', pinyin: 'méi guān xi', pt: 'tudo bem / sem problema', cat: 'Cortesia',
+      etym: '<span class="han">没</span> (não há) + <span class="han">关系</span> (relação)' },
+    { hanzi: '请', pinyin: 'qǐng', pt: 'por favor / convidar', cat: 'Cortesia' },
+    { hanzi: '不好意思', pinyin: 'bù hǎo yì si', pt: 'com licença / desculpa', cat: 'Cortesia',
+      etym: 'Lit. "não tenho boa intenção" — constrangimento educado' },
+    { hanzi: '是', pinyin: 'shì', pt: 'sim / é', cat: 'Resposta' },
+    { hanzi: '不是', pinyin: 'bú shì', pt: 'não é', cat: 'Resposta',
+      etym: '<span class="han">不</span> (não) + <span class="han">是</span> (ser)' },
+    { hanzi: '好', pinyin: 'hǎo', pt: 'ok / bom', cat: 'Resposta',
+      etym: '<span class="han">女</span> (mulher) + <span class="han">子</span> (filho) = harmonia' },
+    { hanzi: '不要', pinyin: 'bú yào', pt: 'não quero', cat: 'Resposta',
+      etym: '<span class="han">不</span> (não) + <span class="han">要</span> (querer)' },
+    { hanzi: '我不懂', pinyin: 'wǒ bù dǒng', pt: 'eu não entendo', cat: 'Resposta',
+      etym: '<span class="han">我</span> (eu) + <span class="han">不</span> (não) + <span class="han">懂</span> (entender)' },
+    { hanzi: '我知道', pinyin: 'wǒ zhī dào', pt: 'eu sei / entendi', cat: 'Resposta',
+      etym: '<span class="han">知道</span> = <span class="han">知</span> (saber) + <span class="han">道</span> (caminho)' },
+    { hanzi: '多少钱', pinyin: 'duō shao qián', pt: 'quanto custa?', cat: 'Compras',
+      etym: '<span class="han">多少</span> (quanto, "muito-pouco") + <span class="han">钱</span> (dinheiro)' },
+    { hanzi: '太贵了', pinyin: 'tài guì le', pt: 'muito caro', cat: 'Compras',
+      etym: '<span class="han">太</span> (muito) + <span class="han">贵</span> (caro) + <span class="han">了</span> (partícula)' },
+    { hanzi: '便宜一点', pinyin: 'pián yi yì diǎn', pt: 'mais barato, por favor', cat: 'Compras',
+      etym: '<span class="han">便宜</span> (barato) + <span class="han">一点</span> (um pouco)' },
+    { hanzi: '我要这个', pinyin: 'wǒ yào zhè ge', pt: 'eu quero este', cat: 'Compras',
+      etym: '<span class="han">我</span> (eu) + <span class="han">要</span> (querer) + <span class="han">这个</span> (este)' },
+    { hanzi: '在哪里', pinyin: 'zài nǎ lǐ', pt: 'onde fica?', cat: 'Direções',
+      etym: '<span class="han">在</span> (estar em) + <span class="han">哪里</span> (qual lugar)' },
+    { hanzi: '怎么走', pinyin: 'zěn me zǒu', pt: 'como chegar', cat: 'Direções',
+      etym: '<span class="han">怎么</span> (como) + <span class="han">走</span> (andar)' },
+    { hanzi: '什么时候', pinyin: 'shén me shí hou', pt: 'quando?', cat: 'Pergunta',
+      etym: '<span class="han">什么</span> (que) + <span class="han">时候</span> (momento)' },
+    { hanzi: '为什么', pinyin: 'wèi shén me', pt: 'por quê?', cat: 'Pergunta',
+      etym: '<span class="han">为</span> (por causa de) + <span class="han">什么</span> (o quê)' },
+    { hanzi: '可以吗', pinyin: 'kě yǐ ma', pt: 'pode? / posso?', cat: 'Pergunta',
+      etym: '<span class="han">可以</span> (poder) + <span class="han">吗</span> (partícula)' },
+    { hanzi: '有没有', pinyin: 'yǒu méi yǒu', pt: 'tem ou não tem?', cat: 'Pergunta',
+      etym: '<span class="han">有</span> (ter) + <span class="han">没有</span> (não ter)' },
+    { hanzi: '菜单', pinyin: 'cài dān', pt: 'cardápio', cat: 'Restaurante',
+      etym: '<span class="han">菜</span> (prato) + <span class="han">单</span> (lista)' },
+    { hanzi: '服务员', pinyin: 'fú wù yuán', pt: 'garçom / atendente', cat: 'Restaurante',
+      etym: '<span class="han">服务</span> (serviço) + <span class="han">员</span> (funcionário)' },
+    { hanzi: '买单', pinyin: 'mǎi dān', pt: 'a conta, por favor', cat: 'Restaurante',
+      etym: '<span class="han">买</span> (comprar) + <span class="han">单</span> (conta)' },
+    { hanzi: '好吃', pinyin: 'hǎo chī', pt: 'gostoso / saboroso', cat: 'Restaurante',
+      etym: '<span class="han">好</span> (bom) + <span class="han">吃</span> (comer)' },
+    { hanzi: '不要辣', pinyin: 'bú yào là', pt: 'sem pimenta', cat: 'Restaurante',
+      etym: '<span class="han">不要</span> (não quero) + <span class="han">辣</span> (picante)' },
+    { hanzi: '我吃素', pinyin: 'wǒ chī sù', pt: 'sou vegetariano', cat: 'Restaurante',
+      etym: '<span class="han">我</span> (eu) + <span class="han">吃</span> (comer) + <span class="han">素</span> (vegetal)' },
+    { hanzi: '水', pinyin: 'shuǐ', pt: 'água', cat: 'Comida',
+      etym: 'Pictograma de água corrente' },
+    { hanzi: '茶', pinyin: 'chá', pt: 'chá', cat: 'Comida',
+      etym: 'Origem da palavra "chá" em português' },
+    { hanzi: '啤酒', pinyin: 'pí jiǔ', pt: 'cerveja', cat: 'Comida',
+      etym: '<span class="han">啤</span> (transliteração de "beer") + <span class="han">酒</span> (álcool)' },
+    { hanzi: '咖啡', pinyin: 'kā fēi', pt: 'café', cat: 'Comida',
+      etym: 'Transliteração fonética de "coffee"' },
+    { hanzi: '米饭', pinyin: 'mǐ fàn', pt: 'arroz (cozido)', cat: 'Comida',
+      etym: '<span class="han">米</span> (grão) + <span class="han">饭</span> (refeição)' },
+    { hanzi: '面条', pinyin: 'miàn tiáo', pt: 'macarrão / noodles', cat: 'Comida',
+      etym: '<span class="han">面</span> (massa) + <span class="han">条</span> (tira)' },
+    { hanzi: '鸡肉', pinyin: 'jī ròu', pt: 'frango', cat: 'Comida',
+      etym: '<span class="han">鸡</span> (galinha) + <span class="han">肉</span> (carne)' },
+    { hanzi: '牛肉', pinyin: 'niú ròu', pt: 'carne bovina', cat: 'Comida',
+      etym: '<span class="han">牛</span> (boi) + <span class="han">肉</span> (carne)' },
+    { hanzi: '猪肉', pinyin: 'zhū ròu', pt: 'carne de porco', cat: 'Comida',
+      etym: '<span class="han">猪</span> (porco) + <span class="han">肉</span> (carne)' },
+    { hanzi: '鱼', pinyin: 'yú', pt: 'peixe', cat: 'Comida',
+      etym: 'Pictograma estilizado de peixe' },
+    { hanzi: '蔬菜', pinyin: 'shū cài', pt: 'legumes / verduras', cat: 'Comida',
+      etym: '<span class="han">蔬</span> (hortaliça) + <span class="han">菜</span> (vegetal)' },
+    { hanzi: '水果', pinyin: 'shuǐ guǒ', pt: 'frutas', cat: 'Comida',
+      etym: '<span class="han">水</span> (água) + <span class="han">果</span> (fruto)' },
+    { hanzi: '出租车', pinyin: 'chū zū chē', pt: 'táxi', cat: 'Transporte',
+      etym: '<span class="han">出租</span> (alugar) + <span class="han">车</span> (carro)' },
+    { hanzi: '地铁', pinyin: 'dì tiě', pt: 'metrô', cat: 'Transporte',
+      etym: '<span class="han">地</span> (terra) + <span class="han">铁</span> (ferro)' },
+    { hanzi: '公交车', pinyin: 'gōng jiāo chē', pt: 'ônibus', cat: 'Transporte',
+      etym: '<span class="han">公交</span> (público) + <span class="han">车</span> (veículo)' },
+    { hanzi: '火车', pinyin: 'huǒ chē', pt: 'trem', cat: 'Transporte',
+      etym: '<span class="han">火</span> (fogo) + <span class="han">车</span> (carro)' },
+    { hanzi: '飞机', pinyin: 'fēi jī', pt: 'avião', cat: 'Transporte',
+      etym: '<span class="han">飞</span> (voar) + <span class="han">机</span> (máquina)' },
+    { hanzi: '机场', pinyin: 'jī chǎng', pt: 'aeroporto', cat: 'Transporte',
+      etym: '<span class="han">机</span> (de 飞机, avião) + <span class="han">场</span> (campo)' },
+    { hanzi: '火车站', pinyin: 'huǒ chē zhàn', pt: 'estação de trem', cat: 'Transporte',
+      etym: '<span class="han">火车</span> (trem) + <span class="han">站</span> (estação)' },
+    { hanzi: '车票', pinyin: 'chē piào', pt: 'passagem / bilhete', cat: 'Transporte',
+      etym: '<span class="han">车</span> (veículo) + <span class="han">票</span> (bilhete)' },
+    { hanzi: '停', pinyin: 'tíng', pt: 'parar / pare', cat: 'Transporte' },
+    { hanzi: '到这里', pinyin: 'dào zhè lǐ', pt: 'até aqui', cat: 'Transporte',
+      etym: '<span class="han">到</span> (chegar) + <span class="han">这里</span> (aqui)' },
+    { hanzi: '酒店', pinyin: 'jiǔ diàn', pt: 'hotel', cat: 'Hotel',
+      etym: '<span class="han">酒</span> (bebida) + <span class="han">店</span> (estabelecimento)' },
+    { hanzi: '房间', pinyin: 'fáng jiān', pt: 'quarto', cat: 'Hotel',
+      etym: '<span class="han">房</span> (cômodo) + <span class="han">间</span> (espaço)' },
+    { hanzi: '钥匙', pinyin: 'yào shi', pt: 'chave', cat: 'Hotel' },
+    { hanzi: '无线网', pinyin: 'wú xiàn wǎng', pt: 'wi-fi', cat: 'Hotel',
+      etym: '<span class="han">无</span> (sem) + <span class="han">线</span> (fio) + <span class="han">网</span> (rede)' },
+    { hanzi: '密码', pinyin: 'mì mǎ', pt: 'senha', cat: 'Hotel',
+      etym: '<span class="han">密</span> (secreto) + <span class="han">码</span> (código)' },
+    { hanzi: '退房', pinyin: 'tuì fáng', pt: 'fazer check-out', cat: 'Hotel',
+      etym: '<span class="han">退</span> (devolver) + <span class="han">房</span> (quarto)' },
+    { hanzi: '左', pinyin: 'zuǒ', pt: 'esquerda', cat: 'Direções' },
+    { hanzi: '右', pinyin: 'yòu', pt: 'direita', cat: 'Direções' },
+    { hanzi: '直走', pinyin: 'zhí zǒu', pt: 'siga reto', cat: 'Direções',
+      etym: '<span class="han">直</span> (reto) + <span class="han">走</span> (andar)' },
+    { hanzi: '这里', pinyin: 'zhè lǐ', pt: 'aqui', cat: 'Direções',
+      etym: '<span class="han">这</span> (este) + <span class="han">里</span> (dentro/lugar)' },
+    { hanzi: '那里', pinyin: 'nà lǐ', pt: 'ali / lá', cat: 'Direções',
+      etym: '<span class="han">那</span> (aquele) + <span class="han">里</span> (lugar)' },
+    { hanzi: '附近', pinyin: 'fù jìn', pt: 'perto / nas redondezas', cat: 'Direções',
+      etym: '<span class="han">附</span> (junto) + <span class="han">近</span> (próximo)' },
+    { hanzi: '远', pinyin: 'yuǎn', pt: 'longe', cat: 'Direções' },
+    { hanzi: '洗手间', pinyin: 'xǐ shǒu jiān', pt: 'banheiro', cat: 'Lugares',
+      etym: '<span class="han">洗</span> (lavar) + <span class="han">手</span> (mão) + <span class="han">间</span> (sala)' },
+    { hanzi: '银行', pinyin: 'yín háng', pt: 'banco', cat: 'Lugares',
+      etym: '<span class="han">银</span> (prata) + <span class="han">行</span> (negócio)' },
+    { hanzi: '医院', pinyin: 'yī yuàn', pt: 'hospital', cat: 'Lugares',
+      etym: '<span class="han">医</span> (medicina) + <span class="han">院</span> (instituição)' },
+    { hanzi: '药店', pinyin: 'yào diàn', pt: 'farmácia', cat: 'Lugares',
+      etym: '<span class="han">药</span> (remédio) + <span class="han">店</span> (loja)' },
+    { hanzi: '超市', pinyin: 'chāo shì', pt: 'supermercado', cat: 'Lugares',
+      etym: '<span class="han">超</span> (super) + <span class="han">市</span> (mercado)' },
+    { hanzi: '商店', pinyin: 'shāng diàn', pt: 'loja', cat: 'Lugares',
+      etym: '<span class="han">商</span> (comércio) + <span class="han">店</span> (estabelecimento)' },
+    { hanzi: '大使馆', pinyin: 'dà shǐ guǎn', pt: 'embaixada', cat: 'Lugares',
+      etym: '<span class="han">大使</span> (embaixador) + <span class="han">馆</span> (prédio)' },
+    { hanzi: '一', pinyin: 'yī', pt: '1 (um)', cat: 'Número', etym: 'Um traço — unidade' },
+    { hanzi: '二', pinyin: 'èr', pt: '2 (dois)', cat: 'Número', etym: 'Dois traços' },
+    { hanzi: '三', pinyin: 'sān', pt: '3 (três)', cat: 'Número', etym: 'Três traços' },
+    { hanzi: '四', pinyin: 'sì', pt: '4 (quatro)', cat: 'Número' },
+    { hanzi: '五', pinyin: 'wǔ', pt: '5 (cinco)', cat: 'Número' },
+    { hanzi: '六', pinyin: 'liù', pt: '6 (seis)', cat: 'Número' },
+    { hanzi: '七', pinyin: 'qī', pt: '7 (sete)', cat: 'Número' },
+    { hanzi: '八', pinyin: 'bā', pt: '8 (oito)', cat: 'Número',
+      etym: 'Número da sorte — som parecido com "prosperar" (发 fā)' },
+    { hanzi: '九', pinyin: 'jiǔ', pt: '9 (nove)', cat: 'Número' },
+    { hanzi: '十', pinyin: 'shí', pt: '10 (dez)', cat: 'Número', etym: 'Cruz — completude' },
+    { hanzi: '一百', pinyin: 'yì bǎi', pt: '100 (cem)', cat: 'Número',
+      etym: '<span class="han">一</span> (um) + <span class="han">百</span> (cem)' },
+    { hanzi: '一千', pinyin: 'yì qiān', pt: '1.000 (mil)', cat: 'Número',
+      etym: '<span class="han">一</span> (um) + <span class="han">千</span> (mil)' },
+    { hanzi: '现金', pinyin: 'xiàn jīn', pt: 'dinheiro / em espécie', cat: 'Pagamento',
+      etym: '<span class="han">现</span> (atual) + <span class="han">金</span> (ouro)' },
+    { hanzi: '信用卡', pinyin: 'xìn yòng kǎ', pt: 'cartão de crédito', cat: 'Pagamento',
+      etym: '<span class="han">信用</span> (crédito) + <span class="han">卡</span> (cartão)' },
+    { hanzi: '微信', pinyin: 'wēi xìn', pt: 'WeChat', cat: 'Pagamento',
+      etym: '<span class="han">微</span> (micro) + <span class="han">信</span> (mensagem)' },
+    { hanzi: '支付宝', pinyin: 'zhī fù bǎo', pt: 'Alipay', cat: 'Pagamento',
+      etym: '<span class="han">支付</span> (pagar) + <span class="han">宝</span> (tesouro)' },
+    { hanzi: '发票', pinyin: 'fā piào', pt: 'nota fiscal', cat: 'Pagamento',
+      etym: '<span class="han">发</span> (emitir) + <span class="han">票</span> (bilhete)' },
+    { hanzi: '救命', pinyin: 'jiù mìng', pt: 'socorro!', cat: 'Emergência',
+      etym: '<span class="han">救</span> (salvar) + <span class="han">命</span> (vida)' },
+    { hanzi: '小心', pinyin: 'xiǎo xīn', pt: 'cuidado!', cat: 'Emergência',
+      etym: '<span class="han">小</span> (pequeno) + <span class="han">心</span> (coração)' },
+    { hanzi: '警察', pinyin: 'jǐng chá', pt: 'polícia', cat: 'Emergência',
+      etym: '<span class="han">警</span> (alerta) + <span class="han">察</span> (observar)' },
+    { hanzi: '医生', pinyin: 'yī shēng', pt: 'médico', cat: 'Emergência',
+      etym: '<span class="han">医</span> (medicina) + <span class="han">生</span> (pessoa)' },
+    { hanzi: '我生病了', pinyin: 'wǒ shēng bìng le', pt: 'estou doente', cat: 'Emergência',
+      etym: '<span class="han">生病</span> (adoecer) + <span class="han">了</span> (partícula)' },
+    { hanzi: '我迷路了', pinyin: 'wǒ mí lù le', pt: 'estou perdido', cat: 'Emergência',
+      etym: '<span class="han">迷路</span> = <span class="han">迷</span> (confuso) + <span class="han">路</span> (caminho)' },
+    { hanzi: '我是巴西人', pinyin: 'wǒ shì bā xī rén', pt: 'sou brasileiro', cat: 'Apresentação',
+      etym: '<span class="han">巴西</span> (Brasil, fonético) + <span class="han">人</span> (pessoa)' },
+    { hanzi: '我叫', pinyin: 'wǒ jiào', pt: 'meu nome é...', cat: 'Apresentação',
+      etym: '<span class="han">我</span> (eu) + <span class="han">叫</span> (chamar-se)' },
+    { hanzi: '你叫什么名字', pinyin: 'nǐ jiào shén me míng zi', pt: 'qual é o seu nome?', cat: 'Apresentação',
+      etym: 'Lit. "você chama que nome?"' },
+    { hanzi: '我不会说中文', pinyin: 'wǒ bú huì shuō zhōng wén', pt: 'eu não falo chinês', cat: 'Apresentação',
+      etym: '<span class="han">中文</span> = <span class="han">中</span> (China) + <span class="han">文</span> (idioma)' },
+    { hanzi: '你会说英文吗', pinyin: 'nǐ huì shuō yīng wén ma', pt: 'você fala inglês?', cat: 'Apresentação',
+      etym: '<span class="han">英文</span> = <span class="han">英</span> (Inglaterra) + <span class="han">文</span> (idioma)' },
+    { hanzi: '请慢一点', pinyin: 'qǐng màn yì diǎn', pt: 'mais devagar, por favor', cat: 'Apresentação',
+      etym: '<span class="han">请</span> (por favor) + <span class="han">慢</span> (devagar) + <span class="han">一点</span> (um pouco)' },
+    { hanzi: '再说一遍', pinyin: 'zài shuō yí biàn', pt: 'repita, por favor', cat: 'Apresentação',
+      etym: '<span class="han">再</span> (de novo) + <span class="han">说</span> (falar) + <span class="han">一遍</span> (uma vez)' },
+    { hanzi: '今天', pinyin: 'jīn tiān', pt: 'hoje', cat: 'Tempo',
+      etym: '<span class="han">今</span> (agora) + <span class="han">天</span> (dia)' },
+    { hanzi: '明天', pinyin: 'míng tiān', pt: 'amanhã', cat: 'Tempo',
+      etym: '<span class="han">明</span> (próximo) + <span class="han">天</span> (dia)' },
+    { hanzi: '昨天', pinyin: 'zuó tiān', pt: 'ontem', cat: 'Tempo',
+      etym: '<span class="han">昨</span> (passado) + <span class="han">天</span> (dia)' },
+    { hanzi: '现在', pinyin: 'xiàn zài', pt: 'agora', cat: 'Tempo',
+      etym: '<span class="han">现</span> (presente) + <span class="han">在</span> (estar)' },
+    { hanzi: '几点', pinyin: 'jǐ diǎn', pt: 'que horas?', cat: 'Tempo',
+      etym: '<span class="han">几</span> (quantos) + <span class="han">点</span> (hora)' },
+    { hanzi: '你好吗', pinyin: 'nǐ hǎo ma', pt: 'como você está?', cat: 'Conversa',
+      etym: '<span class="han">你好</span> (olá) + <span class="han">吗</span> (partícula de pergunta)' },
+    { hanzi: '我很好', pinyin: 'wǒ hěn hǎo', pt: 'estou bem', cat: 'Conversa',
+      etym: '<span class="han">很</span> (muito) é obrigatório antes do adjetivo' },
+    { hanzi: '你呢', pinyin: 'nǐ ne', pt: 'e você?', cat: 'Conversa',
+      etym: '<span class="han">呢</span> devolve a pergunta que acabou de ser feita' },
+    { hanzi: '很高兴认识你', pinyin: 'hěn gāo xìng rèn shi nǐ', pt: 'muito prazer em conhecê-lo', cat: 'Conversa',
+      etym: '<span class="han">高兴</span> (contente) + <span class="han">认识</span> (conhecer)' },
+    { hanzi: '你是哪国人', pinyin: 'nǐ shì nǎ guó rén', pt: 'de que país você é?', cat: 'Conversa',
+      etym: '<span class="han">哪国</span> (qual país) + <span class="han">人</span> (pessoa)' },
+    { hanzi: '我来自巴西', pinyin: 'wǒ lái zì bā xī', pt: 'eu venho do Brasil', cat: 'Conversa',
+      etym: '<span class="han">来自</span> (vir de) + <span class="han">巴西</span> (Brasil)' },
+    { hanzi: '我是游客', pinyin: 'wǒ shì yóu kè', pt: 'sou turista', cat: 'Conversa',
+      etym: '<span class="han">游</span> (viajar) + <span class="han">客</span> (visitante)' },
+    { hanzi: '我第一次来中国', pinyin: 'wǒ dì yī cì lái zhōng guó', pt: 'é minha primeira vez na China', cat: 'Conversa',
+      etym: '<span class="han">第一次</span> (primeira vez) + <span class="han">来</span> (vir)' },
+    { hanzi: '中国很漂亮', pinyin: 'zhōng guó hěn piào liang', pt: 'a China é muito bonita', cat: 'Conversa',
+      etym: '<span class="han">漂亮</span> (bonito) — elogio que sempre abre portas' },
+    { hanzi: '我明白了', pinyin: 'wǒ míng bai le', pt: 'entendi', cat: 'Conversa',
+      etym: '<span class="han">明白</span> (claro/compreender) + <span class="han">了</span> (mudança de estado)' },
+    { hanzi: '请写下来', pinyin: 'qǐng xiě xià lái', pt: 'escreva, por favor', cat: 'Conversa',
+      etym: '<span class="han">写</span> (escrever) + <span class="han">下来</span> (registrar)' },
+    { hanzi: '等一下', pinyin: 'děng yí xià', pt: 'espere um momento', cat: 'Conversa',
+      etym: '<span class="han">等</span> (esperar) + <span class="han">一下</span> (um instante)' },
+    { hanzi: '没问题', pinyin: 'méi wèn tí', pt: 'sem problema', cat: 'Conversa',
+      etym: '<span class="han">没</span> (não há) + <span class="han">问题</span> (problema)' },
+    { hanzi: '当然可以', pinyin: 'dāng rán kě yǐ', pt: 'claro que pode', cat: 'Conversa',
+      etym: '<span class="han">当然</span> (naturalmente) + <span class="han">可以</span> (poder)' },
+    { hanzi: '请帮帮我', pinyin: 'qǐng bāng bang wǒ', pt: 'por favor, me ajude', cat: 'Conversa',
+      etym: '<span class="han">帮</span> (ajudar) duplicado suaviza o pedido' },
+    { hanzi: '可以帮我拍照吗', pinyin: 'kě yǐ bāng wǒ pāi zhào ma', pt: 'pode tirar uma foto pra mim?', cat: 'Conversa',
+      etym: '<span class="han">拍照</span> (tirar foto) = <span class="han">拍</span> (bater) + <span class="han">照</span> (imagem)' },
+    { hanzi: '我们可以拍照吗', pinyin: 'wǒ men kě yǐ pāi zhào ma', pt: 'podemos tirar uma foto juntos?', cat: 'Conversa',
+      etym: '<span class="han">我们</span> (nós) — <span class="han">们</span> marca plural' },
+    { hanzi: '我们走吧', pinyin: 'wǒ men zǒu ba', pt: 'vamos!', cat: 'Conversa',
+      etym: '<span class="han">吧</span> transforma a frase em sugestão' },
+    { hanzi: '太好了', pinyin: 'tài hǎo le', pt: 'que ótimo!', cat: 'Conversa',
+      etym: '<span class="han">太...了</span> é o molde de ênfase' },
+    { hanzi: '加油', pinyin: 'jiā yóu', pt: 'força! / vai!', cat: 'Conversa',
+      etym: 'Lit. "adicionar óleo" — o grito de incentivo mais comum' },
+    { hanzi: '祝你好运', pinyin: 'zhù nǐ hǎo yùn', pt: 'boa sorte', cat: 'Conversa',
+      etym: '<span class="han">祝</span> (desejar) + <span class="han">好运</span> (boa sorte)' },
+    { hanzi: '一路平安', pinyin: 'yí lù píng ān', pt: 'boa viagem', cat: 'Conversa',
+      etym: 'Lit. "todo o caminho em paz"' },
+    { hanzi: '干杯', pinyin: 'gān bēi', pt: 'saúde! (brinde)', cat: 'Conversa',
+      etym: 'Lit. "copo seco" — esvaziar o copo' },
+    { hanzi: '护照', pinyin: 'hù zhào', pt: 'passaporte', cat: 'Aeroporto',
+      etym: '<span class="han">护</span> (proteger) + <span class="han">照</span> (documento)' },
+    { hanzi: '签证', pinyin: 'qiān zhèng', pt: 'visto', cat: 'Aeroporto',
+      etym: '<span class="han">签</span> (assinar) + <span class="han">证</span> (certificado)' },
+    { hanzi: '登机牌', pinyin: 'dēng jī pái', pt: 'cartão de embarque', cat: 'Aeroporto',
+      etym: '<span class="han">登机</span> (embarcar) + <span class="han">牌</span> (cartão)' },
+    { hanzi: '行李', pinyin: 'xíng li', pt: 'bagagem', cat: 'Aeroporto' },
+    { hanzi: '几号登机口', pinyin: 'jǐ hào dēng jī kǒu', pt: 'qual é o portão de embarque?', cat: 'Aeroporto',
+      etym: '<span class="han">登机口</span> (portão) = embarcar + boca' },
+    { hanzi: '航班延误了吗', pinyin: 'háng bān yán wù le ma', pt: 'o voo está atrasado?', cat: 'Aeroporto',
+      etym: '<span class="han">航班</span> (voo) + <span class="han">延误</span> (atraso)' },
+    { hanzi: '我的行李丢了', pinyin: 'wǒ de xíng li diū le', pt: 'minha bagagem sumiu', cat: 'Aeroporto',
+      etym: '<span class="han">丢</span> (perder) + <span class="han">了</span> (já aconteceu)' },
+    { hanzi: '海关', pinyin: 'hǎi guān', pt: 'alfândega', cat: 'Aeroporto',
+      etym: '<span class="han">海</span> (mar) + <span class="han">关</span> (barreira)' },
+    { hanzi: '请去这个地址', pinyin: 'qǐng qù zhè ge dì zhǐ', pt: 'vá para este endereço, por favor', cat: 'Transporte',
+      etym: '<span class="han">地址</span> (endereço) — mostre a tela do celular' },
+    { hanzi: '请打表', pinyin: 'qǐng dǎ biǎo', pt: 'ligue o taxímetro, por favor', cat: 'Transporte',
+      etym: '<span class="han">打表</span> = acionar o medidor' },
+    { hanzi: '要多久', pinyin: 'yào duō jiǔ', pt: 'quanto tempo leva?', cat: 'Transporte',
+      etym: '<span class="han">多久</span> (quanto tempo)' },
+    { hanzi: '在这里下车', pinyin: 'zài zhè lǐ xià chē', pt: 'desço aqui', cat: 'Transporte',
+      etym: '<span class="han">下车</span> (descer do veículo)' },
+    { hanzi: '下一站是哪里', pinyin: 'xià yí zhàn shì nǎ lǐ', pt: 'qual é a próxima parada?', cat: 'Transporte',
+      etym: '<span class="han">下一站</span> (próxima estação)' },
+    { hanzi: '去机场多少钱', pinyin: 'qù jī chǎng duō shao qián', pt: 'quanto custa até o aeroporto?', cat: 'Transporte',
+      etym: 'Combine <span class="han">去</span> (ir a) + destino + <span class="han">多少钱</span>' },
+    { hanzi: '我有预订', pinyin: 'wǒ yǒu yù dìng', pt: 'tenho reserva', cat: 'Hotel',
+      etym: '<span class="han">预</span> (antecipado) + <span class="han">订</span> (reservar)' },
+    { hanzi: '我要入住', pinyin: 'wǒ yào rù zhù', pt: 'quero fazer check-in', cat: 'Hotel',
+      etym: '<span class="han">入</span> (entrar) + <span class="han">住</span> (hospedar-se)' },
+    { hanzi: '几点退房', pinyin: 'jǐ diǎn tuì fáng', pt: 'que horas é o check-out?', cat: 'Hotel',
+      etym: '<span class="han">几点</span> (que horas) + <span class="han">退房</span> (check-out)' },
+    { hanzi: '空调坏了', pinyin: 'kōng tiáo huài le', pt: 'o ar-condicionado quebrou', cat: 'Hotel',
+      etym: '<span class="han">空调</span> (ar-condicionado) + <span class="han">坏了</span> (estragou)' },
+    { hanzi: '没有热水', pinyin: 'méi yǒu rè shuǐ', pt: 'não tem água quente', cat: 'Hotel',
+      etym: '<span class="han">热</span> (quente) + <span class="han">水</span> (água)' },
+    { hanzi: '可以寄存行李吗', pinyin: 'kě yǐ jì cún xíng li ma', pt: 'posso deixar a bagagem guardada?', cat: 'Hotel',
+      etym: '<span class="han">寄存</span> (guardar em depósito)' },
+    { hanzi: '我要点菜', pinyin: 'wǒ yào diǎn cài', pt: 'quero fazer o pedido', cat: 'Restaurante',
+      etym: '<span class="han">点</span> (apontar) + <span class="han">菜</span> (prato)' },
+    { hanzi: '有英文菜单吗', pinyin: 'yǒu yīng wén cài dān ma', pt: 'tem cardápio em inglês?', cat: 'Restaurante',
+      etym: '<span class="han">英文</span> (inglês) + <span class="han">菜单</span> (cardápio)' },
+    { hanzi: '这个是什么', pinyin: 'zhè ge shì shén me', pt: 'o que é isto?', cat: 'Restaurante',
+      etym: 'Aponte para o prato e pergunte' },
+    { hanzi: '我对花生过敏', pinyin: 'wǒ duì huā shēng guò mǐn', pt: 'sou alérgico a amendoim', cat: 'Restaurante',
+      etym: '<span class="han">对...过敏</span> (ser alérgico a) + <span class="han">花生</span> (amendoim)' },
+    { hanzi: '不要味精', pinyin: 'bú yào wèi jīng', pt: 'sem glutamato', cat: 'Restaurante',
+      etym: '<span class="han">味精</span> (MSG) = sabor + essência' },
+    { hanzi: '少辣', pinyin: 'shǎo là', pt: 'pouco picante', cat: 'Restaurante',
+      etym: '<span class="han">少</span> (pouco) + <span class="han">辣</span> (picante)' },
+    { hanzi: '打包', pinyin: 'dǎ bāo', pt: 'para viagem / embalar', cat: 'Restaurante',
+      etym: '<span class="han">打</span> (fazer) + <span class="han">包</span> (embrulho)' },
+    { hanzi: '再来一个', pinyin: 'zài lái yí ge', pt: 'mais um, por favor', cat: 'Restaurante',
+      etym: '<span class="han">再来</span> (trazer de novo) + <span class="han">一个</span> (um)' },
+    { hanzi: '可以刷卡吗', pinyin: 'kě yǐ shuā kǎ ma', pt: 'posso pagar com cartão?', cat: 'Pagamento',
+      etym: '<span class="han">刷卡</span> = passar o cartão' },
+    { hanzi: '可以用微信支付吗', pinyin: 'kě yǐ yòng wēi xìn zhī fù ma', pt: 'posso pagar com WeChat?', cat: 'Pagamento',
+      etym: 'Na China quase tudo se paga por <span class="han">微信</span> ou <span class="han">支付宝</span>' },
+    { hanzi: '有别的颜色吗', pinyin: 'yǒu bié de yán sè ma', pt: 'tem outra cor?', cat: 'Compras',
+      etym: '<span class="han">别的</span> (outro) + <span class="han">颜色</span> (cor)' },
+    { hanzi: '我可以试试吗', pinyin: 'wǒ kě yǐ shì shi ma', pt: 'posso experimentar?', cat: 'Compras',
+      etym: '<span class="han">试</span> (provar) duplicado = "dar uma provadinha"' },
+    { hanzi: '太大了', pinyin: 'tài dà le', pt: 'muito grande', cat: 'Compras',
+      etym: '<span class="han">太...了</span> (excessivamente)' },
+    { hanzi: '太小了', pinyin: 'tài xiǎo le', pt: 'muito pequeno', cat: 'Compras',
+      etym: '<span class="han">小</span> (pequeno)' },
+    { hanzi: '我再看看', pinyin: 'wǒ zài kàn kan', pt: 'vou dar mais uma olhada', cat: 'Compras',
+      etym: 'Forma educada de recusar sem dizer não' },
+    { hanzi: '我需要帮助', pinyin: 'wǒ xū yào bāng zhù', pt: 'preciso de ajuda', cat: 'Emergência',
+      etym: '<span class="han">需要</span> (precisar) + <span class="han">帮助</span> (ajuda)' },
+    { hanzi: '请叫救护车', pinyin: 'qǐng jiào jiù hù chē', pt: 'chame uma ambulância, por favor', cat: 'Emergência',
+      etym: '<span class="han">救护车</span> = salvar + cuidar + carro' },
+    { hanzi: '我头疼', pinyin: 'wǒ tóu téng', pt: 'estou com dor de cabeça', cat: 'Emergência',
+      etym: '<span class="han">头</span> (cabeça) + <span class="han">疼</span> (dor)' },
+    { hanzi: '我肚子疼', pinyin: 'wǒ dù zi téng', pt: 'estou com dor de barriga', cat: 'Emergência',
+      etym: '<span class="han">肚子</span> (barriga) + <span class="han">疼</span> (dor)' },
+    { hanzi: '我的手机被偷了', pinyin: 'wǒ de shǒu jī bèi tōu le', pt: 'meu celular foi roubado', cat: 'Emergência',
+      etym: '<span class="han">被</span> marca voz passiva + <span class="han">偷</span> (roubar)' },
+    { hanzi: '我需要翻译', pinyin: 'wǒ xū yào fān yì', pt: 'preciso de um tradutor', cat: 'Emergência',
+      etym: '<span class="han">翻译</span> (tradução/tradutor)' },
+    { hanzi: '洗手间在哪里', pinyin: 'xǐ shǒu jiān zài nǎ lǐ', pt: 'onde fica o banheiro?', cat: 'Direções',
+      etym: 'A frase mais útil da viagem' },
+    { hanzi: '我想去这里', pinyin: 'wǒ xiǎng qù zhè lǐ', pt: 'quero ir para cá (mostrando o mapa)', cat: 'Direções',
+      etym: '<span class="han">想</span> (querer/desejar) + <span class="han">去</span> (ir)' },
+    { hanzi: '这里可以上网吗', pinyin: 'zhè lǐ kě yǐ shàng wǎng ma', pt: 'tem internet aqui?', cat: 'Direções',
+      etym: '<span class="han">上网</span> = subir na rede' },
+    { hanzi: '地图', pinyin: 'dì tú', pt: 'mapa', cat: 'Direções',
+      etym: '<span class="han">地</span> (terra) + <span class="han">图</span> (desenho)' },
+  ];
+
+  // ─── localStorage (progresso persistente) ───
+  const STORAGE_KEY = 'iori-chinese-progress-v1';
+  // status: { [hanzi]: 'know' | 'review' }
+  let progress = {};
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) progress = JSON.parse(saved);
+  } catch (e) { progress = {}; }
+
+  function saveProgress() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }
+    catch (e) { /* ignore */ }
+  }
+
+  function markCard(hanzi, status) {
+    progress[hanzi] = status;
+    saveProgress();
+  }
+
+  // ─── Shuffle ───
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  let cards = shuffle(deck);
+  let index = 0, likes = 0, dislikes = 0;
+
+  // ─── DOM refs ───
+  const card = document.getElementById('card');
+  const charEl = document.getElementById('char');
+  const frontPinyinEl = document.getElementById('frontPinyin');
+  const pinyinEl = document.getElementById('pinyin');
+  const translationEl = document.getElementById('translation');
+  const categoryEl = document.getElementById('category');
+  const etymologyEl = document.getElementById('etymology');
+  const cardNumEl = document.getElementById('cardNum');
+  const cardNumBackEl = document.getElementById('cardNumBack');
+  const likesEl = document.getElementById('likes');
+  const dislikesEl = document.getElementById('dislikes');
+  const progressEl = document.getElementById('progress');
+  const doneEl = document.getElementById('done');
+  const indicatorLike = document.querySelector('.indicator.like');
+  const indicatorDislike = document.querySelector('.indicator.dislike');
+  const audioBtnFront = document.getElementById('audioBtnFront');
+  const audioBtnBack = document.getElementById('audioBtnBack');
+
+  // ─── Web Speech API (com feature detection) ───
+  const hasSpeech = typeof window !== 'undefined'
+    && 'speechSynthesis' in window
+    && 'SpeechSynthesisUtterance' in window;
+  let zhVoice = null;
+  let voicesReady = false;
+  let speechWarmedUp = false;
+
+  function loadVoices() {
+    if (!hasSpeech) return false;
+    try {
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return false;
+      // Preferência: voz feminina chinesa > qualquer zh-CN > qualquer zh
+      zhVoice = voices.find(v => /zh[-_]?CN/i.test(v.lang) && /Tingting|Mei-Jia|Sin-ji|female|女/i.test(v.name))
+             || voices.find(v => /zh[-_]?CN/i.test(v.lang))
+             || voices.find(v => /^zh/i.test(v.lang))
+             || voices.find(v => /chinese|mandarin/i.test(v.name));
+      voicesReady = true;
+      return true;
+    } catch (err) { return false; }
+  }
+
+  if (hasSpeech) {
+    loadVoices();
+    try {
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      }
+    } catch (err) {}
+  } else {
+    if (audioBtnFront) audioBtnFront.classList.add('disabled');
+    if (audioBtnBack) audioBtnBack.classList.add('disabled');
+  }
+
+  // iOS Safari precisa de uma "ativação" via gesto do usuário antes de falar.
+  // Falamos uma string vazia no primeiro toque pra desbloquear o áudio.
+  function warmUpSpeech() {
+    if (!hasSpeech || speechWarmedUp) return;
+    try {
+      const warmup = new SpeechSynthesisUtterance(' ');
+      warmup.volume = 0;
+      warmup.rate = 1;
+      window.speechSynthesis.speak(warmup);
+      speechWarmedUp = true;
+    } catch (err) {}
+  }
+
+  function speak(text, btn) {
+    if (!hasSpeech) {
+      alert('Seu navegador não tem suporte a síntese de voz em mandarim. Tente Safari (iPhone) ou Chrome (Android).');
+      return;
+    }
+
+    // Garante voices carregadas (em alguns navegadores carrega tarde)
+    if (!voicesReady) loadVoices();
+
+    try {
+      // Cancela qualquer fala em andamento
+      window.speechSynthesis.cancel();
+
+      // Pequeno delay ajuda no iOS após o cancel
+      setTimeout(() => {
+        try {
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = 'zh-CN';
+          if (zhVoice) u.voice = zhVoice;
+          u.rate = 0.85;
+          u.pitch = 1;
+          u.volume = 1;
+          const buttons = btn ? [btn] : [audioBtnFront, audioBtnBack];
+          buttons.forEach(b => b && b.classList.add('playing'));
+          u.onend = () => buttons.forEach(b => b && b.classList.remove('playing'));
+          u.onerror = (e) => {
+            buttons.forEach(b => b && b.classList.remove('playing'));
+            console.warn('Speech error:', e);
+          };
+          window.speechSynthesis.speak(u);
+
+          // Workaround para iOS: às vezes pausa sozinho
+          setTimeout(() => {
+            if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+          }, 100);
+        } catch (err) {
+          if (btn) btn.classList.remove('playing');
+        }
+      }, 50);
+    } catch (err) {
+      if (btn) btn.classList.remove('playing');
+    }
+  }
+
+  function playCurrent(e) {
+    if (e) { e.stopPropagation(); e.preventDefault(); }
+    warmUpSpeech();
+    if (index < cards.length) speak(cards[index].hanzi);
+  }
+
+  // Listeners para touch e click — touch responde mais rápido no mobile
+  audioBtnFront.addEventListener('click', playCurrent);
+  audioBtnBack.addEventListener('click', playCurrent);
+  audioBtnFront.addEventListener('touchend', playCurrent);
+  audioBtnBack.addEventListener('touchend', playCurrent);
+
+  // Warm-up no primeiro toque em qualquer lugar do app (para iOS)
+  document.addEventListener('touchstart', warmUpSpeech, { once: true, passive: true });
+  document.addEventListener('click', warmUpSpeech, { once: true });
+
+  // ─── Render ───
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function render() {
+    if (index >= cards.length) { finish(); return; }
+    const c = cards[index];
+    card.classList.remove('revealed');
+    setTimeout(() => {
+      charEl.textContent = c.hanzi;
+      charEl.setAttribute('data-len', Math.min(c.hanzi.length, 9));
+      frontPinyinEl.textContent = c.pinyin;
+      pinyinEl.textContent = c.pinyin;
+      translationEl.textContent = c.pt;
+      categoryEl.textContent = c.cat;
+      if (c.etym) {
+        etymologyEl.innerHTML = c.etym;
+        etymologyEl.style.display = 'block';
+      } else {
+        etymologyEl.style.display = 'none';
+      }
+      cardNumEl.textContent = '\u2116 ' + pad(index + 1) + ' / ' + pad(cards.length);
+      cardNumBackEl.textContent = cardNumEl.textContent;
+      progressEl.style.width = ((index / cards.length) * 100) + '%';
+      card.classList.add('enter');
+      setTimeout(() => card.classList.remove('enter'), 400);
+    }, 50);
+  }
+
+  function updateStats() {
+    likesEl.textContent = likes;
+    dislikesEl.textContent = dislikes;
+  }
+
+  function nextCard(direction) {
+    if (hasSpeech) {
+      try { window.speechSynthesis.cancel(); } catch (err) {}
+    }
+    audioBtnFront.classList.remove('playing');
+    audioBtnBack.classList.remove('playing');
+    const currentHanzi = cards[index].hanzi;
+    if (direction === 'right') {
+      likes++;
+      markCard(currentHanzi, 'know');
+      card.classList.add('exit-right');
+    } else {
+      dislikes++;
+      markCard(currentHanzi, 'review');
+      card.classList.add('exit-left');
+    }
+    updateStats();
+    setTimeout(() => {
+      card.classList.remove('exit-right', 'exit-left');
+      card.style.transform = '';
+      indicatorLike.style.opacity = 0;
+      indicatorDislike.style.opacity = 0;
+      index++;
+      render();
+    }, 500);
+  }
+
+  function finish() {
+    progressEl.style.width = '100%';
+    document.getElementById('finalLikes').textContent = likes;
+    document.getElementById('finalDislikes').textContent = dislikes;
+    doneEl.classList.add('active');
+  }
+
+  card.addEventListener('click', () => {
+    if (!dragHappened) card.classList.toggle('revealed');
+  });
+
+  document.getElementById('btnLike').addEventListener('click', () => nextCard('right'));
+  document.getElementById('btnDislike').addEventListener('click', () => nextCard('left'));
+
+  function startSession(cardList) {
+    cards = shuffle(cardList);
+    index = 0; likes = 0; dislikes = 0;
+    updateStats();
+    doneEl.classList.remove('active');
+    render();
+  }
+
+  document.getElementById('restart').addEventListener('click', () => {
+    startSession(deck);
+  });
+
+  document.getElementById('reviewOnly').addEventListener('click', () => {
+    const reviewCards = deck.filter(c => progress[c.hanzi] === 'review');
+    if (reviewCards.length === 0) {
+      startSession(deck);
+    } else {
+      startSession(reviewCards);
+    }
+  });
+
+  // ─── Drag ───
+  let startX = 0, startY = 0, currentX = 0, currentY = 0;
+  let isDragging = false, dragHappened = false;
+
+  function onStart(e) {
+    if (card.classList.contains('exit-right') || card.classList.contains('exit-left')) return;
+    isDragging = true;
+    dragHappened = false;
+    const point = e.touches ? e.touches[0] : e;
+    startX = point.clientX;
+    startY = point.clientY;
+    card.classList.add('dragging');
+  }
+
+  function onMove(e) {
+    if (!isDragging) return;
+    const point = e.touches ? e.touches[0] : e;
+    currentX = point.clientX - startX;
+    currentY = point.clientY - startY;
+    if (Math.abs(currentX) > 5 || Math.abs(currentY) > 5) dragHappened = true;
+    const rotation = currentX * 0.08;
+    card.style.transform = 'translate(' + currentX + 'px, ' + (currentY * 0.3) + 'px) rotate(' + rotation + 'deg)';
+    if (currentX > 40) {
+      indicatorLike.style.opacity = Math.min(currentX / 120, 1);
+      indicatorDislike.style.opacity = 0;
+    } else if (currentX < -40) {
+      indicatorDislike.style.opacity = Math.min(-currentX / 120, 1);
+      indicatorLike.style.opacity = 0;
+    } else {
+      indicatorLike.style.opacity = 0;
+      indicatorDislike.style.opacity = 0;
+    }
+  }
+
+  function onEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    card.classList.remove('dragging');
+    const threshold = 100;
+    if (currentX > threshold) nextCard('right');
+    else if (currentX < -threshold) nextCard('left');
+    else {
+      card.style.transform = '';
+      indicatorLike.style.opacity = 0;
+      indicatorDislike.style.opacity = 0;
+    }
+    currentX = 0; currentY = 0;
+    setTimeout(() => { dragHappened = false; }, 50);
+  }
+
+  card.addEventListener('mousedown', onStart);
+  card.addEventListener('touchstart', onStart, { passive: true });
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, { passive: true });
+  document.addEventListener('mouseup', onEnd);
+  document.addEventListener('touchend', onEnd);
+
+  document.addEventListener('keydown', (e) => {
+    if (panel.classList.contains('active')) return;
+    if (e.key === 'ArrowRight') nextCard('right');
+    else if (e.key === 'ArrowLeft') nextCard('left');
+    else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      card.classList.toggle('revealed');
+    }
+  });
+
+  // ─── Panel (lista de palavras) ───
+  const panel = document.getElementById('panel');
+  const panelContent = document.getElementById('panelContent');
+  const panelTitle = document.getElementById('panelTitle');
+  const catsEl = document.getElementById('cats');
+  let currentTab = 'know';
+
+  function openPanel(tab) {
+    currentTab = tab || 'know';
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.tab === currentTab);
+    });
+    renderCats();
+    renderPanel();
+    panel.classList.add('active');
+  }
+
+  function closePanel() {
+    if (hasSpeech) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+    panel.classList.remove('active');
+  }
+
+  let currentCat = 'all';
+
+  function getList(tab) {
+    let list = deck;
+    if (tab === 'know') list = deck.filter(c => progress[c.hanzi] === 'know');
+    else if (tab === 'review') list = deck.filter(c => progress[c.hanzi] === 'review');
+    if (currentCat !== 'all') list = list.filter(c => c.cat === currentCat);
+    return list;
+  }
+
+  function renderCats() {
+    const cats = ['all'].concat(
+      deck.map(c => c.cat).filter((cat, i, arr) => arr.indexOf(cat) === i).sort()
+    );
+    if (cats.indexOf(currentCat) === -1) currentCat = 'all';
+    catsEl.innerHTML = '';
+    cats.forEach(cat => {
+      const chip = document.createElement('button');
+      chip.className = 'cat-chip' + (cat === currentCat ? ' active' : '');
+      chip.textContent = cat === 'all' ? 'Todas' : cat;
+      chip.addEventListener('click', () => {
+        currentCat = cat;
+        renderCats();
+        renderPanel();
+      });
+      catsEl.appendChild(chip);
+    });
+  }
+
+  function renderPanel() {
+    const list = getList(currentTab);
+
+    // counts
+    const knowCount = deck.filter(c => progress[c.hanzi] === 'know').length;
+    const reviewCount = deck.filter(c => progress[c.hanzi] === 'review').length;
+    document.getElementById('countKnow').textContent = knowCount;
+    document.getElementById('countReview').textContent = reviewCount;
+    document.getElementById('countAll').textContent = deck.length;
+
+    if (list.length === 0) {
+      const messages = {
+        know: 'Nenhuma palavra marcada como "sei" nesta categoria.',
+        review: 'Nada para revisar aqui — você está em dia!',
+        all: 'Nenhuma palavra nesta categoria.'
+      };
+      panelContent.innerHTML = '<div class="empty">' + messages[currentTab] + '</div>';
+      return;
+    }
+
+    panelContent.innerHTML = '';
+    list.forEach(c => {
+      const status = progress[c.hanzi] || 'unseen';
+      const row = document.createElement('div');
+      row.className = 'word-row';
+      row.innerHTML =
+        '<div class="word-status ' + status + '"></div>' +
+        '<div class="word-hanzi">' + c.hanzi + '</div>' +
+        '<div class="word-info">' +
+          '<div class="word-pinyin">' + c.pinyin + '</div>' +
+          '<div class="word-pt">' + c.pt + '</div>' +
+        '</div>' +
+        '<button class="word-audio" aria-label="Ouvir">♪</button>';
+
+      const audioBtn = row.querySelector('.word-audio');
+      audioBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        speak(c.hanzi, audioBtn);
+      });
+
+      panelContent.appendChild(row);
+    });
+  }
+
+  document.getElementById('openMenu').addEventListener('click', () => openPanel('all'));
+  document.getElementById('openKnow').addEventListener('click', () => openPanel('know'));
+  document.getElementById('openReview').addEventListener('click', () => openPanel('review'));
+  document.getElementById('closePanel').addEventListener('click', closePanel);
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentTab = tab.dataset.tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
+      renderPanel();
+    });
+  });
+
+  document.getElementById('trainSelected').addEventListener('click', () => {
+    const list = getList(currentTab);
+    if (list.length === 0) return;
+    closePanel();
+    startSession(list);
+  });
+
+  document.getElementById('resetProgress').addEventListener('click', () => {
+    if (confirm('Limpar todo o progresso? Esta ação não pode ser desfeita.')) {
+      progress = {};
+      saveProgress();
+      renderPanel();
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>
