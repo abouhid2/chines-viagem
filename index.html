@@ -390,7 +390,7 @@
      meta viewport e montam a pagina com 980px de largura. Ai o cap
      em px deixava a carta com 47% da tela. Em telas de toque os
      limites passam a ser relativos, e a tipografia e medida em
-     fracao da propria carta (cqw), entao a proporcao se mantem
+     fracao da propria carta (cqmin), entao a proporcao se mantem
      qualquer que seja a largura logica da pagina.
      --------------------------------------------------------------- */
   @media (pointer: coarse) {
@@ -407,26 +407,26 @@
     .btn-label { font-size: min(2.3vw, 13px); }
   }
 
-  @supports (container-type: inline-size) {
-    .card { container-type: inline-size; }
-    .corner-mark { font-size: 2.8cqw; }
-    .corner-stamp { width: 9.4cqw; height: 9.4cqw; font-size: 4.7cqw; }
-    .character[data-len="1"] { font-size: 42cqw; }
-    .character[data-len="2"] { font-size: 30cqw; }
-    .character[data-len="3"] { font-size: 25cqw; }
-    .character[data-len="4"] { font-size: 19.5cqw; }
-    .character[data-len="5"] { font-size: 16cqw; }
-    .character[data-len="6"] { font-size: 13cqw; }
-    .character[data-len="7"] { font-size: 11.5cqw; }
-    .character[data-len="8"] { font-size: 9.8cqw; }
-    .character[data-len="9"] { font-size: 8.7cqw; }
-    .front-pinyin { font-size: 6.8cqw; }
-    .pinyin { font-size: 7.4cqw; }
-    .translation { font-size: 7.8cqw; }
-    .category { font-size: 2.9cqw; }
-    .etymology { font-size: 4.2cqw; }
-    .etymology .han { font-size: 4.8cqw; }
-    .hint { font-size: 2.7cqw; }
+  @supports (container-type: size) {
+    .card { container-type: size; }
+    .corner-mark { font-size: 2.8cqmin; }
+    .corner-stamp { width: 9.4cqmin; height: 9.4cqmin; font-size: 4.7cqmin; }
+    .character[data-len="1"] { font-size: 42cqmin; }
+    .character[data-len="2"] { font-size: 30cqmin; }
+    .character[data-len="3"] { font-size: 25cqmin; }
+    .character[data-len="4"] { font-size: 19.5cqmin; }
+    .character[data-len="5"] { font-size: 16cqmin; }
+    .character[data-len="6"] { font-size: 13cqmin; }
+    .character[data-len="7"] { font-size: 11.5cqmin; }
+    .character[data-len="8"] { font-size: 9.8cqmin; }
+    .character[data-len="9"] { font-size: 8.7cqmin; }
+    .front-pinyin { font-size: 6.8cqmin; }
+    .pinyin { font-size: 7.4cqmin; }
+    .translation { font-size: 7.8cqmin; }
+    .category { font-size: 2.9cqmin; }
+    .etymology { font-size: 4.2cqmin; }
+    .etymology .han { font-size: 4.8cqmin; }
+    .hint { font-size: 2.7cqmin; }
   }
 </style>
 </head>
