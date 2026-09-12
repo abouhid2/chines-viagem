@@ -1140,7 +1140,7 @@
   let currentTab = 'know';
 
   function openPanel(tab) {
-    currentTab = tab || 'know';
+    currentTab = tab || 'all';
     document.querySelectorAll('.tab').forEach(t => {
       t.classList.toggle('active', t.dataset.tab === currentTab);
     });
@@ -1178,6 +1178,11 @@
       chip.textContent = cat === 'all' ? 'Todas' : cat;
       chip.addEventListener('click', () => {
         currentCat = cat;
+        // Escolher um grupo mostra o tipo inteiro, nao so o que ja foi respondido.
+        currentTab = 'all';
+        document.querySelectorAll('.tab').forEach(t => {
+          t.classList.toggle('active', t.dataset.tab === 'all');
+        });
         renderCats();
         renderPanel();
       });
