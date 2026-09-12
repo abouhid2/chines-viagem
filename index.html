@@ -315,23 +315,57 @@
     background: var(--vermilion);
   }
   .tab-count { font-size: 9px; opacity: 0.6; margin-left: 4px; }
-  .cats {
-    display: flex; gap: 6px; padding: 12px 24px;
-    overflow-x: auto; border-bottom: 1px solid rgba(26, 22, 18, 0.06);
-    scrollbar-width: none;
+  [hidden] { display: none !important; }
+  /* Grelha de areas: tudo visivel de uma vez, sem rolagem lateral. */
+  .area-grid {
+    flex: 1; overflow-y: auto; overflow-x: hidden;
+    display: grid; gap: 12px; padding: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(min(42vw, 230px), 1fr));
+    align-content: start;
   }
-  .cats::-webkit-scrollbar { display: none; }
-  .cat-chip {
-    flex-shrink: 0; padding: 9px 14px; border-radius: 2px;
-    border: 1px solid rgba(26, 22, 18, 0.2); background: transparent;
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    letter-spacing: 1.5px; text-transform: uppercase;
-    cursor: pointer; color: var(--ink); opacity: 0.6;
+  .area-card {
+    position: relative; overflow: hidden; text-align: left;
+    border: 1px solid rgba(184, 137, 62, 0.3); border-radius: 4px;
+    background: linear-gradient(180deg, #faf3e6 0%, #f4ede0 100%);
+    padding: 16px 14px 14px; cursor: pointer; color: var(--ink);
+    display: flex; flex-direction: column; gap: 6px; min-height: 112px;
+    transition: transform 0.12s;
   }
-  .cat-chip.active {
-    background: var(--ink); color: var(--paper);
-    border-color: var(--ink); opacity: 1;
+  .area-card:active { transform: scale(0.97); }
+  .area-card.all {
+    grid-column: 1 / -1; min-height: 86px;
+    background: linear-gradient(180deg, #1a1612 0%, #2a221b 100%);
+    color: var(--paper); border-color: var(--ink);
   }
+  .area-han {
+    position: absolute; right: -4px; bottom: -16px;
+    font-family: 'Noto Serif SC', serif; font-size: 58px; line-height: 1;
+    color: var(--vermilion); opacity: 0.1; pointer-events: none;
+  }
+  .area-card.all .area-han { color: var(--gold); opacity: 0.25; }
+  .area-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 21px;
+    font-weight: 600; line-height: 1.1; position: relative;
+  }
+  .area-count {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.55;
+    position: relative;
+  }
+  .area-bar {
+    height: 3px; border-radius: 2px; margin-top: auto;
+    background: rgba(26, 22, 18, 0.12); position: relative;
+  }
+  .area-card.all .area-bar { background: rgba(244, 237, 224, 0.22); }
+  .area-bar > i { display: block; height: 100%; border-radius: 2px; background: var(--jade); }
+  .list-view { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .back-btn {
+    width: 36px; height: 36px; border: 1px solid rgba(26,22,18,0.2);
+    background: transparent; border-radius: 4px; cursor: pointer;
+    font-size: 16px; display: flex; align-items: center; justify-content: center;
+    color: var(--ink); flex-shrink: 0; margin-right: 10px;
+  }
+  .panel-title { flex: 1; min-width: 0; }
   .panel-content { flex: 1; overflow-y: auto; padding: 8px 0; }
   .word-row {
     display: flex; align-items: center; padding: 16px 24px;
@@ -405,6 +439,10 @@
     .menu-btn { width: min(11vw, 60px); height: min(11vw, 60px); }
     .menu-btn span { width: min(4.4vw, 24px); }
     .btn-label { font-size: min(2.3vw, 13px); }
+    .area-card { min-height: min(24vw, 150px); }
+    .area-name { font-size: min(4.4vw, 26px); }
+    .area-count { font-size: min(2.1vw, 12px); }
+    .back-btn { width: min(9vw, 50px); height: min(9vw, 50px); }
   }
 
   @supports (container-type: size) {
@@ -506,19 +544,22 @@
   <!-- Panel: lista de palavras -->
   <div class="panel" id="panel">
     <div class="panel-header">
-      <div class="panel-title" id="panelTitle">词汇 · Vocabulário</div>
+      <button class="back-btn" id="backToAreas" aria-label="Voltar" hidden>←</button>
+      <div class="panel-title" id="panelTitle">词汇 · Áreas</div>
       <button class="close-btn" id="closePanel">✕</button>
     </div>
-    <div class="tabs">
-      <button class="tab active" data-tab="know">Sei <span class="tab-count" id="countKnow">0</span></button>
-      <button class="tab" data-tab="review">Revisar <span class="tab-count" id="countReview">0</span></button>
-      <button class="tab" data-tab="all">Todas <span class="tab-count" id="countAll">0</span></button>
-    </div>
-    <div class="cats" id="cats"></div>
-    <div class="panel-content" id="panelContent"></div>
-    <div class="panel-footer">
-      <button id="trainSelected">Treinar esta lista</button>
-      <button class="danger" id="resetProgress">Limpar progresso</button>
+    <div class="area-grid" id="areaGrid"></div>
+    <div class="list-view" id="listView" hidden>
+      <div class="tabs">
+        <button class="tab" data-tab="know">Sei <span class="tab-count" id="countKnow">0</span></button>
+        <button class="tab" data-tab="review">Revisar <span class="tab-count" id="countReview">0</span></button>
+        <button class="tab active" data-tab="all">Todas <span class="tab-count" id="countAll">0</span></button>
+      </div>
+      <div class="panel-content" id="panelContent"></div>
+      <div class="panel-footer">
+        <button id="trainSelected">Treinar esta lista</button>
+        <button class="danger" id="resetProgress">Limpar progresso</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1202,17 +1243,67 @@
   const panel = document.getElementById('panel');
   const panelContent = document.getElementById('panelContent');
   const panelTitle = document.getElementById('panelTitle');
-  const catsEl = document.getElementById('cats');
-  let currentTab = 'know';
+  const areaGrid = document.getElementById('areaGrid');
+  const listView = document.getElementById('listView');
+  const backBtn = document.getElementById('backToAreas');
+  let currentTab = 'all';
+  let currentCat = 'all';
 
-  function openPanel(tab) {
-    currentTab = tab || 'all';
+  function categories() {
+    return deck.map(c => c.cat).filter((c, i, a) => a.indexOf(c) === i).sort();
+  }
+
+  function setTab(tab) {
+    currentTab = tab;
     document.querySelectorAll('.tab').forEach(t => {
-      t.classList.toggle('active', t.dataset.tab === currentTab);
+      t.classList.toggle('active', t.dataset.tab === tab);
     });
-    renderCats();
+  }
+
+  // Vista 1: todas as areas visiveis de uma vez.
+  function showAreas() {
+    areaGrid.hidden = false;
+    listView.hidden = true;
+    backBtn.hidden = true;
+    panelTitle.textContent = '词汇 · Áreas';
+    renderAreas();
+  }
+
+  // Vista 2: a lista de uma area.
+  function showList(cat, tab) {
+    currentCat = cat;
+    setTab(tab || 'all');
+    areaGrid.hidden = true;
+    listView.hidden = false;
+    backBtn.hidden = false;
+    panelTitle.textContent = cat === 'all' ? 'Todas as palavras' : cat;
     renderPanel();
+  }
+
+  function renderAreas() {
+    areaGrid.innerHTML = '';
+    const make = (cat, label, isAll) => {
+      const list = isAll ? deck : deck.filter(c => c.cat === cat);
+      const known = list.filter(c => progress[c.hanzi] === 'know').length;
+      const pct = list.length ? Math.round(known / list.length * 100) : 0;
+      const card = document.createElement('button');
+      card.className = 'area-card' + (isAll ? ' all' : '');
+      card.innerHTML =
+        '<div class="area-han">' + (isAll ? '全' : list[0].hanzi.charAt(0)) + '</div>' +
+        '<div class="area-name">' + label + '</div>' +
+        '<div class="area-count">' + list.length + ' palavras · ' + pct + '% sei</div>' +
+        '<div class="area-bar"><i style="width:' + pct + '%"></i></div>';
+      card.addEventListener('click', () => showList(cat, 'all'));
+      areaGrid.appendChild(card);
+    };
+    make('all', 'Todas as palavras', true);
+    categories().forEach(cat => make(cat, cat, false));
+  }
+
+  function openPanel(mode) {
     panel.classList.add('active');
+    if (mode === 'know' || mode === 'review') showList('all', mode);
+    else showAreas();
   }
 
   function closePanel() {
@@ -1222,8 +1313,6 @@
     panel.classList.remove('active');
   }
 
-  let currentCat = 'all';
-
   function getList(tab) {
     let list = deck;
     if (tab === 'know') list = deck.filter(c => progress[c.hanzi] === 'know');
@@ -1232,39 +1321,14 @@
     return list;
   }
 
-  function renderCats() {
-    const cats = ['all'].concat(
-      deck.map(c => c.cat).filter((cat, i, arr) => arr.indexOf(cat) === i).sort()
-    );
-    if (cats.indexOf(currentCat) === -1) currentCat = 'all';
-    catsEl.innerHTML = '';
-    cats.forEach(cat => {
-      const chip = document.createElement('button');
-      chip.className = 'cat-chip' + (cat === currentCat ? ' active' : '');
-      chip.textContent = cat === 'all' ? 'Todas' : cat;
-      chip.addEventListener('click', () => {
-        currentCat = cat;
-        // Escolher um grupo mostra o tipo inteiro, nao so o que ja foi respondido.
-        currentTab = 'all';
-        document.querySelectorAll('.tab').forEach(t => {
-          t.classList.toggle('active', t.dataset.tab === 'all');
-        });
-        renderCats();
-        renderPanel();
-      });
-      catsEl.appendChild(chip);
-    });
-  }
-
   function renderPanel() {
     const list = getList(currentTab);
 
-    // counts
-    const knowCount = deck.filter(c => progress[c.hanzi] === 'know').length;
-    const reviewCount = deck.filter(c => progress[c.hanzi] === 'review').length;
-    document.getElementById('countKnow').textContent = knowCount;
-    document.getElementById('countReview').textContent = reviewCount;
-    document.getElementById('countAll').textContent = deck.length;
+    // Os contadores seguem a area aberta, nao o baralho inteiro.
+    const base = currentCat === 'all' ? deck : deck.filter(c => c.cat === currentCat);
+    document.getElementById('countKnow').textContent = base.filter(c => progress[c.hanzi] === 'know').length;
+    document.getElementById('countReview').textContent = base.filter(c => progress[c.hanzi] === 'review').length;
+    document.getElementById('countAll').textContent = base.length;
 
     if (list.length === 0) {
       const messages = {
@@ -1300,15 +1364,15 @@
     });
   }
 
-  document.getElementById('openMenu').addEventListener('click', () => openPanel('all'));
+  document.getElementById('openMenu').addEventListener('click', () => openPanel('areas'));
+  backBtn.addEventListener('click', showAreas);
   document.getElementById('openKnow').addEventListener('click', () => openPanel('know'));
   document.getElementById('openReview').addEventListener('click', () => openPanel('review'));
   document.getElementById('closePanel').addEventListener('click', closePanel);
 
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      currentTab = tab.dataset.tab;
-      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
+      setTab(tab.dataset.tab);
       renderPanel();
     });
   });
@@ -1325,6 +1389,7 @@
       progress = {};
       saveProgress();
       renderPanel();
+      if (!areaGrid.hidden) renderAreas();
     }
   });
 
